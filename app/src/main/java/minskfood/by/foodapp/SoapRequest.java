@@ -1,8 +1,7 @@
 package minskfood.by.foodapp;
 
-import android.net.NetworkInfo;
+import android.content.Context;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import org.ksoap2.SoapEnvelope;
@@ -15,19 +14,24 @@ public class SoapRequest extends AsyncTask<String, Void, String> {
 //    private static final String SOAP_ACTION = "http://env-2955146.mycloud.by/wsdl";
 //    private static final String NAMESPACE = "http://env-2955146.mycloud.by/";
 
-    private static final String SOAP_ACTION = "http://192.168.0.17:3000/wsdl";
-    private static final String NAMESPACE = "http://192.168.0.17:3000/";
+    private static final String SOAP_ACTION = "http://192.168.0.108:3000/wsdl";
+    private static final String NAMESPACE = "http://192.168.0.108:3000/";
     private static final String URL = SOAP_ACTION;
-
+    private OnSoapExecuteListener callback;
     private String author = "";
     private String review = "";
 
-    public SoapRequest(String author, String review) {
-        this.author = author;
-        this.review = review;
+
+    public SoapRequest(Context context) {
+        if (context instanceof OnSoapExecuteListener) {
+            callback = (OnSoapExecuteListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnSoapExecuteListener");
+        }
     }
 
-    public String GetInteger() {
+    public String GetInteger(String author, String review) {
         SoapObject request = new SoapObject(NAMESPACE, "Request");
         request.addProperty("x", author);
         request.addProperty("y", review);
@@ -56,20 +60,21 @@ public class SoapRequest extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... params) {
-        return GetInteger();
+        if (params.length < 2) {
+            return null;
+        }
+        author = params[0];
+        review = params[1];
+        return GetInteger(author, review);
     }
 
-    //// TODO: 5/10/2017
-//    @Override
-//    protected void onPostExecute(String result) {
-//        if (result != null && callback != null) {
-//            if (result.mException != null) {
-//                callback.response(result.mException.getMessage());
-//            } else if (result.mResultValue != null) {
-//                callback.response(result.mResultValue);
-//            }
-//        }
-//    }
+    @Override
+    protected void onPostExecute(String result) {
+        if (result != null && callback != null) {
+            callback.soapResponse(result);
+        }
+        // TODO: 5/10/2017 else if (result == null) handling
+    }
 
     public interface OnSoapExecuteListener {
         void soapResponse(String response);

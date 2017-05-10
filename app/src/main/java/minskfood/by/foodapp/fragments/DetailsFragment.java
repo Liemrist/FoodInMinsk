@@ -1,6 +1,6 @@
 package minskfood.by.foodapp.fragments;
 
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
@@ -11,25 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import io.realm.Realm;
-import io.realm.internal.IOException;
-import minskfood.by.foodapp.PlacesRequestAsync;
 import minskfood.by.foodapp.R;
 import minskfood.by.foodapp.ReviewsAdapter;
-import minskfood.by.foodapp.SoapRequest;
-import minskfood.by.foodapp.activities.MainActivity;
-import minskfood.by.foodapp.activities.ReviewActivity;
 import minskfood.by.foodapp.models.place.Place;
 
 
 public class DetailsFragment extends Fragment {
-    private static final int REVIEW_ACTIVITY_INDEX = 0;
+    private OnFragmentInteractionListener listener;
 
-    /**
-     * Creates a new instance of DetailsFragment, initialized to show the text at 'index'.
-     */
     public static DetailsFragment newInstance(String index) {
         DetailsFragment fragment = new DetailsFragment();
 
@@ -40,11 +30,15 @@ public class DetailsFragment extends Fragment {
         return fragment;
     }
 
-    public String getShownIndex() {
-        return getArguments().getString("index", "defaultValue");
-    }
-
     // Initialization goes in onCreate method (gay says it should be in fragment lifecycle)
+
+    public String getShownIndex() {
+        if (getArguments() != null) {
+            return getArguments().getString("index", "defaultValue");
+        } else {
+            return "";
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,23 +50,12 @@ public class DetailsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_details, container, false);
 
         Button newPostView = (Button) view.findViewById(R.id.button_new_review);
-        newPostView.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), ReviewActivity.class);
-            startActivityForResult(intent, REVIEW_ACTIVITY_INDEX);
-        });
+        newPostView.setOnClickListener(v -> onButtonPressed());
 
         if (getArguments() != null) {
             String index = getArguments().getString("index");
 
-            Realm realm;
-            realm = Realm.getDefaultInstance();
-            Place place = null;
-
-            try {
-                place = realm.where(Place.class).equalTo("_id", index).findFirst();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Place place = listener.getPlaceById(index);
 
             // Initializes all components
             if (place != null) {
@@ -109,23 +92,32 @@ public class DetailsFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REVIEW_ACTIVITY_INDEX:
-                if (resultCode == android.app.Activity.RESULT_OK) {
-                    String author = data.getStringExtra(ReviewActivity.EXTRA_REVIEW_AUTHOR);
-                    String review = data.getStringExtra(ReviewActivity.EXTRA_REVIEW_TEXT);
-
-                    //new PlacesRequestAsync(getActivity()).execute(MainActivity.URL_PLACES);
-                    new SoapRequest(author, review).execute();
-                    //Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
-
-                    Toast.makeText(getContext(), author, Toast.LENGTH_SHORT).show();
-                    break;
-                } else {
-                    break;
-                }
+    public void onButtonPressed() {
+        if (listener != null) {
+            listener.onCreateReviewInteraction();
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            listener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listener = null;
+    }
+
+    public interface OnFragmentInteractionListener {
+        void onCreateReviewInteraction();
+
+        Place getPlaceById(String id);
     }
 }
