@@ -2,7 +2,6 @@ package minskfood.by.foodapp.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,14 +10,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.util.List;
 
 import io.realm.Realm;
 import io.realm.internal.IOException;
-import minskfood.by.foodapp.GetPlaces;
 import minskfood.by.foodapp.PlacesAdapter;
+import minskfood.by.foodapp.PlacesRequestAsync;
 import minskfood.by.foodapp.R;
 import minskfood.by.foodapp.activities.DetailsActivity;
 import minskfood.by.foodapp.activities.MainActivity;
@@ -41,7 +39,8 @@ public class TitlesFragment extends Fragment implements PlacesAdapter.onListFrag
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_titles, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_titles);
@@ -70,12 +69,12 @@ public class TitlesFragment extends Fragment implements PlacesAdapter.onListFrag
         mySwipeRefreshLayout.setOnRefreshListener(() -> {
             // This method performs the actual data-refresh operation.
             // The method calls setRefreshing(false) when it's finished.
-            new GetPlaces(getActivity()).execute(MainActivity.URL_PLACES);
+            new PlacesRequestAsync(getActivity()).execute(MainActivity.URL_PLACES);
         });
 
         return view;
     }
-    
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -114,11 +113,7 @@ public class TitlesFragment extends Fragment implements PlacesAdapter.onListFrag
     }
 
     public void updateListView() {
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
-        } else {
-            Toast.makeText(getContext(), "ADAPTER NULL", Toast.LENGTH_SHORT).show();
-        }
+        adapter.notifyDataSetChanged();
         // To signal refresh has finished
         mySwipeRefreshLayout.setRefreshing(false);
     }
@@ -135,11 +130,12 @@ public class TitlesFragment extends Fragment implements PlacesAdapter.onListFrag
             DetailsFragment details = (DetailsFragment) getFragmentManager()
                     .findFragmentById(R.id.details);
             if (details == null || !details.getShownIndex().equals(index)) {
-                // Make new fragment to show this selection.
-                details = DetailsFragment.newInstance(index);
                 // Execute a transaction, replacing any existing fragment
                 // with this one inside the frame.
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                // Make new fragment to show this selection.
+                details = DetailsFragment.newInstance(index);
+//                transaction.add(R.id.details, details);
                 transaction.replace(R.id.details, details);
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 transaction.commit();

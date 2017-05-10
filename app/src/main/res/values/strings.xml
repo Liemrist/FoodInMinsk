@@ -5,7 +5,7 @@
 
     <!-- Search item -->
     <string name="app_label">label</string>
-    <string name="search_hint">Search cafes and restaurants</string>
+    <string name="search_hint">Search names and tags</string>
     <string name="search">Search</string>
 
     <!-- Place item -->

@@ -15,8 +15,11 @@ import android.widget.Toast;
 
 import io.realm.Realm;
 import io.realm.internal.IOException;
+import minskfood.by.foodapp.PlacesRequestAsync;
 import minskfood.by.foodapp.R;
 import minskfood.by.foodapp.ReviewsAdapter;
+import minskfood.by.foodapp.SoapRequest;
+import minskfood.by.foodapp.activities.MainActivity;
 import minskfood.by.foodapp.activities.ReviewActivity;
 import minskfood.by.foodapp.models.place.Place;
 
@@ -40,6 +43,8 @@ public class DetailsFragment extends Fragment {
     public String getShownIndex() {
         return getArguments().getString("index", "defaultValue");
     }
+
+    // Initialization goes in onCreate method (gay says it should be in fragment lifecycle)
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -109,8 +114,14 @@ public class DetailsFragment extends Fragment {
         switch (requestCode) {
             case REVIEW_ACTIVITY_INDEX:
                 if (resultCode == android.app.Activity.RESULT_OK) {
-                    String result = data.getStringExtra(ReviewActivity.EXTRA_REVIEW_DATA);
-                    Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+                    String author = data.getStringExtra(ReviewActivity.EXTRA_REVIEW_AUTHOR);
+                    String review = data.getStringExtra(ReviewActivity.EXTRA_REVIEW_TEXT);
+
+                    //new PlacesRequestAsync(getActivity()).execute(MainActivity.URL_PLACES);
+                    new SoapRequest(author, review).execute();
+                    //Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+
+                    Toast.makeText(getContext(), author, Toast.LENGTH_SHORT).show();
                     break;
                 } else {
                     break;
