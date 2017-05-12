@@ -12,25 +12,37 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import minskfood.by.foodapp.R;
 import minskfood.by.foodapp.ReviewsAdapter;
 import minskfood.by.foodapp.models.place.Place;
 
 
+/**
+ * Initialization goes in onCreate method (gay says it should be in fragment lifecycle)
+ */
+// TODO: 5/10/2017 remove search from the app bar.
 public class DetailsFragment extends Fragment {
     private OnFragmentInteractionListener listener;
 
+    @BindView(R.id.text_name) TextView nameView;
+    @BindView(R.id.tv_type) TextView typeView;
+    @BindView(R.id.tv_prices) TextView pricesView;
+    @BindView(R.id.tv_district) TextView districtView;
+    @BindView(R.id.tv_address) TextView addressView;
+    @BindView(R.id.tv_worktime) TextView worktimeView;
+    @BindView(R.id.tv_tags) TextView tagsView;
+    @BindView(R.id.tv_description) TextView descriptionView;
+    @BindView(R.id.recycler_reviews) RecyclerView mRecyclerView;
+
     public static DetailsFragment newInstance(String index) {
         DetailsFragment fragment = new DetailsFragment();
-
         Bundle args = new Bundle();
         args.putString("index", index);
         fragment.setArguments(args);
-
         return fragment;
     }
-
-    // Initialization goes in onCreate method (gay says it should be in fragment lifecycle)
 
     public String getShownIndex() {
         if (getArguments() != null) {
@@ -48,6 +60,7 @@ public class DetailsFragment extends Fragment {
         }
 
         View view = inflater.inflate(R.layout.fragment_details, container, false);
+        ButterKnife.bind(this, view);
 
         Button newPostView = (Button) view.findViewById(R.id.button_new_review);
         newPostView.setOnClickListener(v -> onButtonPressed());
@@ -59,16 +72,6 @@ public class DetailsFragment extends Fragment {
 
             // Initializes all components
             if (place != null) {
-                TextView nameView = (TextView) view.findViewById(R.id.text_name);
-                TextView typeView = (TextView) view.findViewById(R.id.tv_type);
-                TextView pricesView = (TextView) view.findViewById(R.id.tv_prices);
-                TextView districtView = (TextView) view.findViewById(R.id.tv_district);
-                TextView addressView = (TextView) view.findViewById(R.id.tv_address);
-                TextView worktimeView = (TextView) view.findViewById(R.id.tv_worktime);
-                TextView tagsView = (TextView) view.findViewById(R.id.tv_tags);
-                TextView descriptionView = (TextView) view.findViewById(R.id.tv_description);
-                RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_reviews);
-
                 nameView.setText(place.getName());
                 typeView.setText(place.getType());
                 pricesView.setText(place.getPrices());
@@ -85,6 +88,7 @@ public class DetailsFragment extends Fragment {
                 mRecyclerView.addItemDecoration(mDividerItemDecoration);
                 mRecyclerView.setLayoutManager(mLayoutManager);
                 mRecyclerView.setHasFixedSize(true);
+                mRecyclerView.setNestedScrollingEnabled(false); // for smooth scrolling
                 mRecyclerView.setAdapter(new ReviewsAdapter(place.getReviews()));
             }
         }

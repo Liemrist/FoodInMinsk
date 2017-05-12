@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 
@@ -26,9 +27,10 @@ public class PlacesRequestAsync extends AsyncTask<String, Integer, PlacesRequest
     }
 
     /**
-     * Given a URL, sets up a connection and gets the HTTP response body from the server.
-     * If the network request is successful, it returns the response body in String form. Otherwise,
-     * it will throw an IOException.
+     * Gets a URL, sets up a connection and gets the HTTP onResponse body from the server.
+     * @param url The url of the server resource
+     * @return the onResponse body in String form if the network request is successful.
+     * @throws IOException if cannot close the connection.
      */
     private static String downloadUrl(URL url) throws IOException {
         InputStream responseBody = null;
@@ -42,7 +44,7 @@ public class PlacesRequestAsync extends AsyncTask<String, Integer, PlacesRequest
             // Timeout for connection.connect()
             connection.setConnectTimeout(10000);
             connection.setRequestMethod("GET");
-            // Open communications link (network traffic occurs here).
+            // Opens communications link (network traffic occurs here)
             connection.connect();
             int responseCode = connection.getResponseCode();
             if (responseCode != HttpURLConnection.HTTP_OK) {
@@ -50,7 +52,6 @@ public class PlacesRequestAsync extends AsyncTask<String, Integer, PlacesRequest
             }
             responseBody = connection.getInputStream();
             if (responseBody != null) {
-                // Converts Stream to String
                 result = readStream(responseBody);
             }
         } catch (Exception e) {
@@ -63,6 +64,12 @@ public class PlacesRequestAsync extends AsyncTask<String, Integer, PlacesRequest
         return result;
     }
 
+    /**
+     * Converts Stream to String.
+     * @param stream Stream to convert
+     * @return String representation of stream data.
+     * @throws IOException if cannot read data.
+     */
     private static String readStream(InputStream stream) throws IOException {
         BufferedReader reader;
         StringBuilder builder = new StringBuilder();
@@ -77,26 +84,21 @@ public class PlacesRequestAsync extends AsyncTask<String, Integer, PlacesRequest
         return builder.toString();
     }
 
-    /**
-     * Cancel background network operation if we do not have network connectivity.
-     */
     @Override
     protected void onPreExecute() {
         if (callback != null) {
             NetworkInfo networkInfo = callback.getActiveNetworkInfo();
-            if (networkInfo == null || !networkInfo.isConnected() ||
-                    (networkInfo.getType() != ConnectivityManager.TYPE_WIFI
-                            && networkInfo.getType() != ConnectivityManager.TYPE_MOBILE)) {
-                // If no connectivity, cancel task and update Callback with null data.
-                callback.response("Response null");
+            boolean noConnection = networkInfo == null || !networkInfo.isConnected()
+                    || (networkInfo.getType() != ConnectivityManager.TYPE_WIFI
+                    && networkInfo.getType() != ConnectivityManager.TYPE_MOBILE);
+            // If no connectivity, cancel network operation and update Callback with null data.
+            if (noConnection) {
+                callback.onResponse("Response null");
                 cancel(true);
             }
         }
     }
 
-    /**
-     * Defines work to perform on the background thread.
-     */
     @Override
     protected Result doInBackground(String... urls) {
         Result result = null;
@@ -108,31 +110,28 @@ public class PlacesRequestAsync extends AsyncTask<String, Integer, PlacesRequest
                 if (resultString != null) {
                     result = new Result(resultString);
                 } else {
-                    throw new IOException("No response received.");
+                    throw new IOException("No onResponse received.");
                 }
-            } catch (Exception e) {
-                result = new Result(e);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         return result;
     }
 
-    /**
-     * Updates the DownloadCallback with the result.
-     */
     @Override
     protected void onPostExecute(Result result) {
-        if (result != null && callback != null) {
+        if (result != null) {
             if (result.mException != null) {
-                callback.response(result.mException.getMessage());
+                callback.onResponse(result.mException.getMessage());
             } else if (result.mResultValue != null) {
-                callback.response(result.mResultValue);
+                callback.onResponse(result.mResultValue);
             }
         }
     }
 
     public interface OnPostExecuteListener {
-        void response(String response);
+        void onResponse(String response);
 
         /**
          * Get the device's active network status in the form of a NetworkInfo object.
@@ -141,8 +140,9 @@ public class PlacesRequestAsync extends AsyncTask<String, Integer, PlacesRequest
     }
 
     /**
-     * Wrapper class that serves as a union of a result value and an exception. When the download
-     * task has completed, either the result value or exception can be a non-null value.
+     * Wrapper class that serves as a union of a result value and an exception.
+     * When the download task has completed, either the result value or exception
+     * can be a non-null value.
      * This allows you to pass exceptions to the UI thread that were thrown during doInBackground().
      */
     @SuppressWarnings("WeakerAccess")

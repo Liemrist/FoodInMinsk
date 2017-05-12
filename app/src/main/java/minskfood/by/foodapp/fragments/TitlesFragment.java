@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import minskfood.by.foodapp.PlacesAdapter;
 import minskfood.by.foodapp.PlacesRequestAsync;
 import minskfood.by.foodapp.R;
@@ -19,9 +21,9 @@ import minskfood.by.foodapp.activities.MainActivity;
 import minskfood.by.foodapp.models.place.Place;
 
 
-public class TitlesFragment extends Fragment implements PlacesAdapter.onListFragmentInteraction {
-    private SwipeRefreshLayout mySwipeRefreshLayout;
-    private RecyclerView recyclerView;
+public class TitlesFragment extends Fragment implements PlacesAdapter.OnPlaceClickListener {
+    @BindView(R.id.recycler_titles) RecyclerView recyclerView;
+    @BindView(R.id.swiperefresh_titles) SwipeRefreshLayout mySwipeRefreshLayout;
     private RecyclerView.Adapter adapter;
     private OnFragmentInteractionListener listener;
 
@@ -45,13 +47,12 @@ public class TitlesFragment extends Fragment implements PlacesAdapter.onListFrag
         adapter = new PlacesAdapter(places, TitlesFragment.this);
 
         View view = inflater.inflate(R.layout.fragment_titles, container, false);
+        ButterKnife.bind(this, view);
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_titles);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
 
-        mySwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh_titles);
         mySwipeRefreshLayout.setOnRefreshListener(() ->
                 new PlacesRequestAsync(getActivity()).execute(MainActivity.URL_PLACES));
 
@@ -65,8 +66,8 @@ public class TitlesFragment extends Fragment implements PlacesAdapter.onListFrag
     }
 
     @Override
-    public void onPlaceInteraction(Place item) {
-        listener.onTitleInteraction(item.getId());
+    public void onPlaceClick(Place place) {
+        listener.onTitleInteraction(place.getId());
     }
 
     public void createNewAdapter(List<Place> places) {

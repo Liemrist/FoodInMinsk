@@ -8,6 +8,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
 
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import minskfood.by.foodapp.R;
 
 
@@ -15,15 +18,14 @@ public class ReviewActivity extends AppCompatActivity {
     public static final String EXTRA_REVIEW_AUTHOR = "extraReviewAuthor";
     public static final String EXTRA_REVIEW_TEXT = "extraReviewText";
 
-    private EditText authorView;
-    private EditText reviewView;
+    @BindView(R.id.text_author) EditText authorView;
+    @BindView(R.id.text_review) EditText reviewView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review);
-        authorView = (EditText) findViewById(R.id.text_author);
-        reviewView = (EditText) findViewById(R.id.text_review);
+        ButterKnife.bind(this);
     }
 
     @Override

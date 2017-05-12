@@ -23,7 +23,7 @@ import io.realm.RealmConfiguration;
 import io.realm.internal.IOException;
 import minskfood.by.foodapp.PlacesRequestAsync;
 import minskfood.by.foodapp.R;
-import minskfood.by.foodapp.SoapRequest;
+import minskfood.by.foodapp.SoapRequestAsync;
 import minskfood.by.foodapp.fragments.DetailsFragment;
 import minskfood.by.foodapp.fragments.TitlesFragment;
 import minskfood.by.foodapp.models.place.Place;
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity
         implements PlacesRequestAsync.OnPostExecuteListener,
         TitlesFragment.OnFragmentInteractionListener,
         DetailsFragment.OnFragmentInteractionListener,
-        SoapRequest.OnSoapExecuteListener {
+        SoapRequestAsync.OnPostExecuteListener {
 
     public static final String URL_PLACES = "http://env-2955146.mycloud.by/places";
     private static final String CUR_POSITION = "CUR_POSITION";
@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity
             DetailsFragment newFragment = DetailsFragment.newInstance(curCheckPosition);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.details, newFragment)
-                    .addToBackStack(null)
                     .commit();
         }
     }
@@ -100,10 +99,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onQueryTextSubmit(String s) {
                 searchAndUpdateTitles(s);
-//                if (!searchView.isIconified()) {
-//                    searchView.setIconified(true);
-//                }
-//                myActionMenuItem.collapseActionView();
                 return false;
             }
 
@@ -124,10 +119,18 @@ public class MainActivity extends AppCompatActivity
                                     .contains("tags.tag", s)
                                     .findAll();
 
-                    TitlesFragment titlesFragment = (TitlesFragment) getSupportFragmentManager()
-                            .findFragmentById(R.id.titles);
-                    if (titlesFragment != null) {
-                        titlesFragment.createNewAdapter(places);
+                    if (dualPane) {
+                        TitlesFragment titlesFragment = (TitlesFragment) getSupportFragmentManager()
+                                .findFragmentById(R.id.titles);
+                        if (titlesFragment != null) {
+                            titlesFragment.createNewAdapter(places);
+                        }
+                    } else {
+                        TitlesFragment titlesFragment = (TitlesFragment) getSupportFragmentManager()
+                                .findFragmentById(R.id.fragment_container);
+                        if (titlesFragment != null) {
+                            titlesFragment.createNewAdapter(places);
+                        }
                     }
                 });
             }
@@ -141,10 +144,7 @@ public class MainActivity extends AppCompatActivity
         switch (requestCode) {
             case REVIEW_ACTIVITY_INDEX:
                 if (resultCode == android.app.Activity.RESULT_OK) {
-                    String author = data.getStringExtra(ReviewActivity.EXTRA_REVIEW_AUTHOR);
-                    String review = data.getStringExtra(ReviewActivity.EXTRA_REVIEW_TEXT);
-
-                    new SoapRequest(MainActivity.this).execute(author, review);
+                    addReview(data);
                     break;
                 } else {
                     break;
@@ -153,12 +153,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Interfaces implementations
+     * GET request to Places server
+     *
+     * @param response - onResponse from server (in JSON array)
      */
-
     @Override
-    public void response(String response) {
-        boolean isLegal = response != null && !response.equals("No response received.")
+    public void onResponse(String response) {
+        boolean isLegal = response != null && !response.equals("No onResponse received.")
                 && !response.equals("Response null");
 
         if (isLegal) {
@@ -254,8 +255,22 @@ public class MainActivity extends AppCompatActivity
         return place;
     }
 
+    /**
+     * SOAP request result handler
+     *
+     * @param response - onResponse from soap service on Places server
+     */
     @Override
-    public void soapResponse(String response) {
-        Toast.makeText(this, "review created", Toast.LENGTH_SHORT).show();
+    public void onSoapPostExecute(String response) {
+        Toast.makeText(this, "onResponse: " + response, Toast.LENGTH_SHORT).show();
+    }
+
+    // TODO: 5/10/2017 Update Realm db here.
+    private void addReview(Intent data) {
+        String id = curCheckPosition;
+        String author = data.getStringExtra(ReviewActivity.EXTRA_REVIEW_AUTHOR);
+        String review = data.getStringExtra(ReviewActivity.EXTRA_REVIEW_TEXT);
+
+        new SoapRequestAsync(MainActivity.this).execute(id, author, review);
     }
 }
