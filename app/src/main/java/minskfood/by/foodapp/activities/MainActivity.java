@@ -73,6 +73,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(CURRENT_POSITION, currentCheckPosition);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (realm != null) realm.close();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
         MenuInflater inflater = getMenuInflater();
@@ -130,15 +142,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(CURRENT_POSITION, currentCheckPosition);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (realm != null) realm.close();
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                getSupportFragmentManager().popBackStack();
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
@@ -220,8 +231,19 @@ public class MainActivity extends AppCompatActivity
     /********* Rest and soap method implementations  ********/
 
     @Override
-    public void onSoapPostExecute(String response) {
-        Toast.makeText(this, "soap: " + response, Toast.LENGTH_SHORT).show();
+    public void onSoapPostExecute(Review response) {
+        if (response != null) {
+            realm.executeTransaction(realm1 -> {
+                Place place = realm1.where(Place.class)
+                        .equalTo("_id", currentCheckPosition)
+                        .findFirst();
+                place.addReview(response);
+            });
+
+            Toast.makeText(this, R.string.review_created, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, R.string.review_creating_failed, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -265,6 +287,13 @@ public class MainActivity extends AppCompatActivity
 
     public void showMenuGroup(boolean show) {
         if (menu == null) return;
+        if (show) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            getSupportActionBar().setHomeButtonEnabled(false);
+        } else {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }
         menu.setGroupVisible(R.id.main_menu_group, show);
     }
 
@@ -279,11 +308,5 @@ public class MainActivity extends AppCompatActivity
         }
 
         new SoapRequestAsync(MainActivity.this).execute(id, author, text);
-
-        // TODO: 5/13/2017 add review to local db only if added to server
-        realm.executeTransaction(realm1 -> {
-            Place place = realm1.where(Place.class).equalTo("_id", id).findFirst();
-            place.addReview(new Review(author, text));
-        });
     }
 }

@@ -39,7 +39,11 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
         holder.place = places.get(position);
         holder.addressView.setText(places.get(position).getLocation().getAddress());
         holder.nameView.setText(places.get(position).getName());
-        holder.tagsView.setText(places.get(position).getTags());
+        if (!places.get(position).getTags().equals("")) {
+            holder.tagsView.setText(places.get(position).getTags());
+        } else {
+            holder.tagsView.setVisibility(View.GONE);
+        }
         switch (holder.place.getType()) {
             case "Restaurant":
                 holder.imageView.setImageResource(R.drawable.goof);
@@ -74,14 +78,10 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
     public class ViewHolder extends RecyclerView.ViewHolder {
         public Place place;
 
-        @BindView(R.id.image_place)
-        ImageView imageView;
-        @BindView(R.id.text_address)
-        TextView addressView;
-        @BindView(R.id.text_name)
-        TextView nameView;
-        @BindView(R.id.text_tags)
-        TextView tagsView;
+        @BindView(R.id.image_place) ImageView imageView;
+        @BindView(R.id.text_address) TextView addressView;
+        @BindView(R.id.text_name) TextView nameView;
+        @BindView(R.id.text_tags) TextView tagsView;
 
         public ViewHolder(View view) {
             super(view);

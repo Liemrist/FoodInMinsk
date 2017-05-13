@@ -10,7 +10,7 @@
         android:id="@+id/text_author"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="6dp"
         android:text="TextView"
         android:textColor="@android:color/black"
         android:textSize="@dimen/text_details_size" />
@@ -19,6 +19,7 @@
         android:id="@+id/text_review"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
         android:text="TextView"
         android:textSize="@dimen/text_details_size" />
 </LinearLayout>

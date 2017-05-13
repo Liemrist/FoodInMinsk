@@ -15,4 +15,7 @@
     <string name="work_time">Время работы</string>
     <string name="updated">Обновлено</string>
     <string name="review_creating_fail">Ошибка создания отзыва</string>
+    <string name="review_created">Отзыв создан</string>
+    <string name="review_creating_failed">Ошибка создания отзыва</string>
+    <string name="name">Имя</string>
 </resources>

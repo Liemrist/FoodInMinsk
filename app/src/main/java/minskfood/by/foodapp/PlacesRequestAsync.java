@@ -48,7 +48,7 @@ public class PlacesRequestAsync extends AsyncTask<String, Integer, String> {
             String urlString = urls[0];
             try {
                 URL url = new URL(urlString);
-                String resultString = downloadUrl(url);
+                String resultString = downloadFromUrl(url);
                 if (resultString != null) {
                     result = resultString;
                 } else {
@@ -73,7 +73,7 @@ public class PlacesRequestAsync extends AsyncTask<String, Integer, String> {
      * @return the onRestPostExecute body in String form if the network request is successful.
      * @throws IOException if cannot close the connection.
      */
-    private static String downloadUrl(URL url) throws IOException {
+    private static String downloadFromUrl(URL url) throws IOException {
         InputStream responseBody = null;
         HttpURLConnection connection = null;
         String result = null;
@@ -102,13 +102,6 @@ public class PlacesRequestAsync extends AsyncTask<String, Integer, String> {
         return result;
     }
 
-    /**
-     * Converts Stream to String.
-     *
-     * @param stream Stream to convert
-     * @return String representation of stream data.
-     * @throws IOException if cannot read data.
-     */
     private static String convertStreamToString(InputStream stream) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
         StringBuilder builder = new StringBuilder();

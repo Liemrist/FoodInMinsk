@@ -74,8 +74,12 @@ public class DetailsFragment extends Fragment {
                 districtView.setText(place.getLocation().getDistrict());
                 addressView.setText(place.getLocation().getAddress());
                 worktimeView.setText(place.getWorkTime().getTime());
-                tagsView.setText(place.getTags());
                 descriptionView.setText(place.getDescription());
+                if (!place.getTags().equals("")){
+                    tagsView.setText(place.getTags());
+                } else {
+                    tagsView.setVisibility(View.GONE);
+                }
 
                 LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
                 DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(

@@ -11,10 +11,12 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 
+import minskfood.by.foodapp.models.place.Review;
+
 /**
  * Sends soap request on server in separate thread.
  */
-public class SoapRequestAsync extends AsyncTask<String, Void, String> {
+public class SoapRequestAsync extends AsyncTask<String, Void, Review> {
     private static final String NAMESPACE = "http://env-2955146.mycloud.by/";
     private static final String SOAP_ACTION = "http://env-2955146.mycloud.by/wsdl";
     private static final String URL = SOAP_ACTION;
@@ -32,13 +34,13 @@ public class SoapRequestAsync extends AsyncTask<String, Void, String> {
     }
 
     @Override
-    protected String doInBackground(String... params) {
+    protected Review doInBackground(String... params) {
         if (params.length < 3) return null;
         return addReview(params[0], params[1], params[2]);
     }
 
     @Override
-    protected void onPostExecute(String result) {
+    protected void onPostExecute(Review result) {
         callback.onSoapPostExecute(result);
     }
 
@@ -50,11 +52,11 @@ public class SoapRequestAsync extends AsyncTask<String, Void, String> {
      * @param text    Review text
      * @return String response of soap service on server (json object) or null
      */
-    private String addReview(String placeId, String author, String text) {
+    private Review addReview(String placeId, String author, String text) {
         SoapObject request = new SoapObject(NAMESPACE, "Request");
         request.addProperty("id", placeId);
         request.addProperty("author", author);
-        request.addProperty("review", text);
+        request.addProperty("text", text);
 
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
         envelope.setOutputSoapObject(request);
@@ -68,14 +70,15 @@ public class SoapRequestAsync extends AsyncTask<String, Void, String> {
 
         SoapObject result = (SoapObject) envelope.bodyIn;
 
-        if (result != null) {
-            return result.toString();
+        if (result != null && result.getPropertyCount() == 2) {
+            return new Review(result.getPropertyAsString("author"),
+                    result.getPropertyAsString("text"));
         } else {
             return null;
         }
     }
 
     public interface OnPostExecuteListener {
-        void onSoapPostExecute(String response);
+        void onSoapPostExecute(Review response);
     }
 }

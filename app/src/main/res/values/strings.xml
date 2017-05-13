@@ -21,4 +21,7 @@
     <string name="review_text">Review text</string>
     <string name="updated">Updated</string>
     <string name="review_creating_fail">Review creating failed</string>
+    <string name="review_created">Review created</string>
+    <string name="review_creating_failed">Review creating failed</string>
+    <string name="name">Name</string>
 </resources>
