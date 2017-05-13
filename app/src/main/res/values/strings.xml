@@ -11,12 +11,14 @@
     <!-- Place item -->
     <string name="image_place_description">image description</string>
     <string name="new_review">New review</string>
-    <string name="reviews">Reviews:</string>
-    <string name="description">Description:</string>
-    <string name="work_time">Work time:</string>
-    <string name="tags">Tags:</string>
-    <string name="address">Address:</string>
-    <string name="district">District:</string>
-    <string name="type">Type:</string>
-    <string name="prices">Prices:</string>
+    <string name="reviews">Reviews</string>
+    <string name="description">Description</string>
+    <string name="work_time">Work time</string>
+    <string name="tags">Tags</string>
+    <string name="address">Address</string>
+    <string name="district">District</string>
+    <string name="type">Type</string>
+    <string name="prices">Prices</string>
+    <string name="author">Author</string>
+    <string name="review">Review</string>
 </resources>

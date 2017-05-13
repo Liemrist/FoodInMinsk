@@ -27,6 +27,7 @@ import minskfood.by.foodapp.SoapRequestAsync;
 import minskfood.by.foodapp.fragments.DetailsFragment;
 import minskfood.by.foodapp.fragments.TitlesFragment;
 import minskfood.by.foodapp.models.place.Place;
+import minskfood.by.foodapp.models.place.Review;
 
 
 public class MainActivity extends AppCompatActivity
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity
     protected String curCheckPosition;
     private boolean dualPane;
     private Realm realm;
-
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,8 +84,20 @@ public class MainActivity extends AppCompatActivity
         outState.putString(CUR_POSITION, curCheckPosition);
     }
 
+    /**
+     * Shows or hides menu group
+     *
+     * @param showMenu boolean for show menu or not
+     */
+    public void showOverflowMenu(boolean showMenu) {
+        if (menu == null)
+            return;
+        menu.setGroupVisible(R.id.main_menu_group, showMenu);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.search, menu);
 
@@ -197,7 +210,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onTitleInteraction(String index) {
         curCheckPosition = index;
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (dualPane) {
             // Check what fragment is currently shown, replace if needed.
             DetailsFragment details = (DetailsFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.details);
@@ -214,11 +227,13 @@ public class MainActivity extends AppCompatActivity
                     .addToBackStack(null)
                     .replace(R.id.fragment_container, newFragment)
                     .commit();
+            showOverflowMenu(false);
         }
     }
 
     @Override
     public List<Place> composeAdapter() {
+        showOverflowMenu(true);
         // todo: use RealmResults and add changeListener (https://github.com/realm/realm-java/issues/2946)
         // also try to use places = realm.where(Place.class).findAllAsync();
         realm = Realm.getDefaultInstance();
@@ -265,12 +280,21 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(this, "onResponse: " + response, Toast.LENGTH_SHORT).show();
     }
 
-    // TODO: 5/10/2017 Update Realm db here.
     private void addReview(Intent data) {
         String id = curCheckPosition;
         String author = data.getStringExtra(ReviewActivity.EXTRA_REVIEW_AUTHOR);
-        String review = data.getStringExtra(ReviewActivity.EXTRA_REVIEW_TEXT);
+        String text = data.getStringExtra(ReviewActivity.EXTRA_REVIEW_TEXT);
 
-        new SoapRequestAsync(MainActivity.this).execute(id, author, review);
+        if (author.equals("") || text.equals("")) {
+            Toast.makeText(this, "Review creating failed", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        new SoapRequestAsync(MainActivity.this).execute(id, author, text);
+        
+        realm.executeTransaction(realm1 -> {
+            Place place = realm1.where(Place.class).equalTo("_id", id).findFirst();
+            place.addReview(new Review(author, text));
+        });
     }
 }

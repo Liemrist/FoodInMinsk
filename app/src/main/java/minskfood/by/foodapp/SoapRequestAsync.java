@@ -47,12 +47,12 @@ public class SoapRequestAsync extends AsyncTask<String, Void, String> {
     }
 
     /**
-     * Adds review to the place in remote database.
+     * Adds review to the place in the remote database.
      *
      * @param id     Id of edited place
      * @param author Review author
      * @param text   Review text
-     * @return String onResponse of soap service on server (json object)
+     * @return String response of soap service on server (json object) or null
      */
     private String addReview(String id, String author, String text) {
         SoapObject request = new SoapObject(NAMESPACE, "Request");

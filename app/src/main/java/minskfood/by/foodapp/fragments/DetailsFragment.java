@@ -14,18 +14,17 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import minskfood.by.foodapp.R;
 import minskfood.by.foodapp.ReviewsAdapter;
 import minskfood.by.foodapp.models.place.Place;
 
 
-/**
- * Initialization goes in onCreate method (gay says it should be in fragment lifecycle)
- */
-// TODO: 5/10/2017 remove search from the app bar.
 public class DetailsFragment extends Fragment {
     private OnFragmentInteractionListener listener;
 
+    @BindView(R.id.button_new_review) Button newPostView;
+    @BindView(R.id.recycler_reviews) RecyclerView mRecyclerView;
     @BindView(R.id.text_name) TextView nameView;
     @BindView(R.id.tv_type) TextView typeView;
     @BindView(R.id.tv_prices) TextView pricesView;
@@ -34,7 +33,6 @@ public class DetailsFragment extends Fragment {
     @BindView(R.id.tv_worktime) TextView worktimeView;
     @BindView(R.id.tv_tags) TextView tagsView;
     @BindView(R.id.tv_description) TextView descriptionView;
-    @BindView(R.id.recycler_reviews) RecyclerView mRecyclerView;
 
     public static DetailsFragment newInstance(String index) {
         DetailsFragment fragment = new DetailsFragment();
@@ -55,20 +53,13 @@ public class DetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if (container == null) {
-            return null;
-        }
+        if (container == null) return null;
 
         View view = inflater.inflate(R.layout.fragment_details, container, false);
         ButterKnife.bind(this, view);
 
-        Button newPostView = (Button) view.findViewById(R.id.button_new_review);
-        newPostView.setOnClickListener(v -> onButtonPressed());
-
         if (getArguments() != null) {
-            String index = getArguments().getString("index");
-
-            Place place = listener.getPlaceById(index);
+            Place place = listener.getPlaceById(getArguments().getString("index"));
 
             // Initializes all components
             if (place != null) {
@@ -88,7 +79,7 @@ public class DetailsFragment extends Fragment {
                 mRecyclerView.addItemDecoration(mDividerItemDecoration);
                 mRecyclerView.setLayoutManager(mLayoutManager);
                 mRecyclerView.setHasFixedSize(true);
-                mRecyclerView.setNestedScrollingEnabled(false); // for smooth scrolling
+                mRecyclerView.setNestedScrollingEnabled(false); // Smooth scrolling in ScrollView
                 mRecyclerView.setAdapter(new ReviewsAdapter(place.getReviews()));
             }
         }
@@ -96,10 +87,9 @@ public class DetailsFragment extends Fragment {
         return view;
     }
 
+    @OnClick(R.id.button_new_review)
     public void onButtonPressed() {
-        if (listener != null) {
-            listener.onCreateReviewInteraction();
-        }
+        if (listener != null) listener.onCreateReviewInteraction();
     }
 
     @Override

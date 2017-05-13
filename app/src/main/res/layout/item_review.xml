@@ -8,14 +8,17 @@
 
     <TextView
         android:id="@+id/text_author"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="3dp"
-        android:text="TextView" />
+        android:layout_marginBottom="4dp"
+        android:text="TextView"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/text_details_size" />
 
     <TextView
         android:id="@+id/text_review"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:text="TextView"
+        android:textSize="@dimen/text_details_size" />
 </LinearLayout>

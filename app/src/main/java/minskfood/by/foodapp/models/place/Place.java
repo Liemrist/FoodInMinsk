@@ -69,4 +69,12 @@ public class Place extends RealmObject {
         }
         return result;
     }
+
+    public void setReviews(RealmList<Review> reviews) {
+        this.reviews = reviews;
+    }
+
+    public void addReview(Review review) {
+        reviews.add(review);
+    }
 }

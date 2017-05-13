@@ -1,10 +1,11 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -14,6 +15,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_margin="@dimen/card_margin"
+            card_view:cardBackgroundColor="@color/cardview_light_background"
             card_view:cardCornerRadius="4dp"
             card_view:cardElevation="2dp">
 
@@ -48,7 +50,7 @@
                     android:layout_below="@+id/textView5"
                     android:layout_marginBottom="10dp"
                     android:text="TextView"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/text_details_size" />
 
 
                 <TextView
@@ -68,7 +70,7 @@
                     android:layout_below="@+id/textView6"
                     android:layout_marginBottom="10dp"
                     android:text="TextView"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/text_details_size" />
 
 
                 <TextView
@@ -88,7 +90,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="10dp"
                     android:text="TextView"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/text_details_size" />
 
 
                 <TextView
@@ -108,7 +110,7 @@
                     android:layout_below="@+id/textView10"
                     android:layout_marginBottom="10dp"
                     android:text="TextView"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/text_details_size" />
 
 
                 <TextView
@@ -128,7 +130,7 @@
                     android:layout_below="@+id/textView19"
                     android:layout_marginBottom="10dp"
                     android:text="TextView"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/text_details_size" />
 
 
                 <TextView
@@ -148,7 +150,7 @@
                     android:layout_below="@+id/textView21"
                     android:layout_marginBottom="10dp"
                     android:text="TextView"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/text_details_size" />
 
                 <TextView
                     android:id="@+id/textView23"
@@ -167,7 +169,7 @@
                     android:layout_below="@+id/textView23"
                     android:layout_marginBottom="10dp"
                     android:text="TextView"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/text_details_size" />
 
             </RelativeLayout>
 
@@ -181,8 +183,8 @@
             android:layout_gravity="center"
             android:layout_marginLeft="@dimen/card_margin"
             android:layout_marginRight="@dimen/card_margin"
-            card_view:cardCornerRadius="4dp"
-            card_view:cardElevation="2dp">
+            card_view:cardBackgroundColor="@color/cardview_light_background"
+            card_view:cardCornerRadius="@dimen/card_corner_radius">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -190,13 +192,15 @@
 
                 <Button
                     android:id="@+id/button_new_review"
-                    style="?android:attr/borderlessButtonStyle"
+                    style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:drawablePadding="20dp"
                     android:drawableStart="@drawable/ic_action_name"
+                    android:text="@string/new_review"
                     android:textAllCaps="false"
-                    android:text="@string/new_review" />
+                    android:textColor="#808080"
+                    android:textSize="@dimen/text_details_size" />
 
             </LinearLayout>
 
@@ -209,8 +213,8 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_margin="@dimen/card_margin"
-            card_view:cardCornerRadius="4dp"
-            card_view:cardElevation="2dp">
+            card_view:cardBackgroundColor="@color/cardview_light_background"
+            card_view:cardCornerRadius="@dimen/card_corner_radius">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -224,7 +228,8 @@
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:layout_marginBottom="6dp"
-                    android:text="@string/reviews" />
+                    android:text="@string/reviews"
+                    android:textSize="12sp" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recycler_reviews"
