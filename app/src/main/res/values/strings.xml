@@ -2,26 +2,29 @@
     <string name="app_name" translatable="false">SweetApp</string>
 
     <!-- Search item -->
-    <string name="app_label" translatable="false">label</string>
-    <string name="search_hint">Search names and tags</string>
     <string name="search">Search</string>
+    <string name="search_hint">Search names and tags</string>
 
     <!-- Place item -->
-    <string name="image_place_description" translatable="false">image description</string>
-    <string name="new_review">New review</string>
-    <string name="reviews">Reviews</string>
-    <string name="description">Description</string>
-    <string name="work_time">Work time</string>
-    <string name="tags">Tags</string>
-    <string name="address">Address</string>
-    <string name="district">District</string>
+    <string name="name">Name</string>
     <string name="type">Type</string>
     <string name="prices">Prices</string>
+    <string name="address">Address</string>
+    <string name="district">District</string>
+    <string name="work_time">Work time</string>
+    <string name="image_description" translatable="false">image description</string>
+    <string name="tags">Tags</string>
+    <string name="description">Description</string>
+    <string name="reviews">Reviews</string>
+
+    <!--Review item-->
     <string name="author">Author</string>
     <string name="review_text">Review text</string>
-    <string name="updated">Updated</string>
-    <string name="review_creating_fail">Review creating failed</string>
-    <string name="review_created">Review created</string>
-    <string name="review_creating_failed">Review creating failed</string>
-    <string name="name">Name</string>
+    <string name="review_create">Review created</string>
+    <string name="review_create_failed">Review creating failed</string>
+
+    <string name="new_review">New review</string>
+    <string name="update">Updated</string>
+    <string name="update_failed">Update failed</string>
+    <string name="place_not_selected">No place selected</string>
 </resources>

@@ -39,6 +39,8 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
 
     @Override
     public int getItemCount() {
+        // FIXME: 5/14/2017 Realm instance has been closed or
+        // this object or its parent has been deleted when searching sometimes.
         return reviews.size();
     }
 

@@ -15,7 +15,7 @@
             android:id="@+id/image_place"
             android:layout_width="match_parent"
             android:layout_height="256dp"
-            android:contentDescription="@string/image_place_description"
+            android:contentDescription="@string/image_description"
             android:scaleType="centerCrop" />
 
         <LinearLayout

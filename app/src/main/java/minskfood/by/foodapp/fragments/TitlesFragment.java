@@ -77,7 +77,6 @@ public class TitlesFragment extends Fragment implements PlacesAdapter.OnPlaceCli
     public void updateListView() {
         recyclerAdapter.notifyDataSetChanged();
         swipeRefreshLayout.setRefreshing(false);
-        Toast.makeText(getContext(), R.string.updated, Toast.LENGTH_SHORT).show();
     }
 
     public interface OnFragmentInteractionListener {

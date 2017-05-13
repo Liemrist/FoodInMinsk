@@ -8,6 +8,7 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -49,11 +50,12 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Realm.init(this);
+        realm = Realm.getDefaultInstance();
 
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState != null) {
-            currentCheckPosition = savedInstanceState.getString(CURRENT_POSITION, "null");
+            currentCheckPosition = savedInstanceState.getString(CURRENT_POSITION, null);
         }
 
         dualPane =
@@ -81,7 +83,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (realm != null) realm.close();
+        realm.close();
     }
 
     @Override
@@ -112,8 +114,19 @@ public class MainActivity extends AppCompatActivity
             }
 
             private void searchAndUpdateTitles(String s) {
-                realm = Realm.getDefaultInstance();
                 realm.executeTransaction(realm1 -> {
+                    Fragment titlesFragment;
+                    if (dualPane) {
+                        titlesFragment = getSupportFragmentManager()
+                                .findFragmentById(R.id.titles);
+                    } else {
+                        titlesFragment = getSupportFragmentManager()
+                                .findFragmentById(R.id.fragment_container);
+                    }
+
+                    if (titlesFragment == null || !(titlesFragment instanceof TitlesFragment))
+                        return;
+
                     List<Place> places =
                             realm1.where(Place.class)
                                     .contains("name", s)
@@ -121,19 +134,7 @@ public class MainActivity extends AppCompatActivity
                                     .contains("tags.tag", s)
                                     .findAll();
 
-                    if (dualPane) {
-                        TitlesFragment titlesFragment = (TitlesFragment) getSupportFragmentManager()
-                                .findFragmentById(R.id.titles);
-                        if (titlesFragment != null) {
-                            titlesFragment.createNewAdapter(places);
-                        }
-                    } else {
-                        TitlesFragment titlesFragment = (TitlesFragment) getSupportFragmentManager()
-                                .findFragmentById(R.id.fragment_container);
-                        if (titlesFragment != null) {
-                            titlesFragment.createNewAdapter(places);
-                        }
-                    }
+                    ((TitlesFragment) titlesFragment).createNewAdapter(places);
                 });
             }
         });
@@ -193,7 +194,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public List<Place> composeAdapter() {
         showMenuGroup(true);
-        realm = Realm.getDefaultInstance();
+
         List<Place> places = null;
         try {
             places = realm.where(Place.class).findAll();
@@ -201,7 +202,7 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
         // fixme: check with null array on server and fix if statement
-        if (places != null) {
+        if (places != null && places.size() != 0) {
             currentCheckPosition = places.get(0).getId();
         }
         return places;
@@ -211,14 +212,16 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onCreateReviewInteraction() {
-        Intent intent = new Intent(MainActivity.this, ReviewActivity.class);
-        startActivityForResult(intent, REVIEW_ACTIVITY_INDEX);
+        if (currentCheckPosition != null) {
+            Intent intent = new Intent(MainActivity.this, ReviewActivity.class);
+            startActivityForResult(intent, REVIEW_ACTIVITY_INDEX);
+        } else {
+            Toast.makeText(this, R.string.place_not_selected, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
     public Place getPlaceById(String id) {
-        Realm realm;
-        realm = Realm.getDefaultInstance();
         Place place = null;
         try {
             place = realm.where(Place.class).equalTo("_id", id).findFirst();
@@ -240,25 +243,22 @@ public class MainActivity extends AppCompatActivity
                 place.addReview(response);
             });
 
-            Toast.makeText(this, R.string.review_created, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.review_create, Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, R.string.review_creating_failed, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.review_create_failed, Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void onRestPostExecute(String response) {
-        boolean isLegal = response != null && !response.equals("No onRestPostExecute received.")
-                && !response.equals("Response null");
-
-        if (isLegal) {
-            // Get a Realm instance for this thread
-            RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().build();
-            realm = Realm.getInstance(realmConfiguration);
-
+        if (response != null) {
             realm.executeTransaction(realm1 -> realm1.deleteAll());
             realm.executeTransaction(realm12 -> realm12
                     .createOrUpdateAllFromJson(Place.class, response));
+
+            Toast.makeText(this, R.string.update, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, R.string.update_failed, Toast.LENGTH_SHORT).show();
         }
 
         if (dualPane) {
@@ -299,7 +299,7 @@ public class MainActivity extends AppCompatActivity
         String text = data.getStringExtra(ReviewActivity.EXTRA_TEXT);
 
         if (author.equals("") || text.equals("")) {
-            Toast.makeText(this, R.string.review_creating_fail, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.review_create_failed, Toast.LENGTH_SHORT).show();
             return;
         }
 

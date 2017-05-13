@@ -13,9 +13,10 @@
     <string name="tags">Тэги</string>
     <string name="type">Тип</string>
     <string name="work_time">Время работы</string>
-    <string name="updated">Обновлено</string>
-    <string name="review_creating_fail">Ошибка создания отзыва</string>
-    <string name="review_created">Отзыв создан</string>
-    <string name="review_creating_failed">Ошибка создания отзыва</string>
+    <string name="update">Обновлено</string>
+    <string name="review_create">Отзыв создан</string>
+    <string name="review_create_failed">Ошибка создания отзыва</string>
     <string name="name">Имя</string>
+    <string name="update_failed">Ошибка обновления</string>
+    <string name="place_not_selected">Место не выбрано</string>
 </resources>
