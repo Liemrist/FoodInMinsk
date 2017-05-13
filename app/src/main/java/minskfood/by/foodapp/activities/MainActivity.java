@@ -20,7 +20,6 @@ import android.widget.Toast;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 import io.realm.internal.IOException;
 import minskfood.by.foodapp.PlacesRequestAsync;
 import minskfood.by.foodapp.R;
