@@ -59,15 +59,15 @@ public class MainActivity extends AppCompatActivity
         dualPane =
                 getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
 
-        if (findViewById(R.id.fragment_container) != null) {
-            TitlesFragment firstFragment = new TitlesFragment();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, firstFragment)
-                    .commit();
-        } else {
+        if (dualPane) {
             DetailsFragment newFragment = DetailsFragment.newInstance(currentCheckPosition);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.details, newFragment)
+                    .commit();
+        } else {
+            TitlesFragment firstFragment = new TitlesFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, firstFragment)
                     .commit();
         }
     }
@@ -287,14 +287,10 @@ public class MainActivity extends AppCompatActivity
 
     public void showMenuGroup(boolean show) {
         if (menu == null) return;
-        if (show) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            getSupportActionBar().setHomeButtonEnabled(false);
-        } else {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
-        }
         menu.setGroupVisible(R.id.main_menu_group, show);
+        // shows home button on the action bar when only details fragment visible
+        getSupportActionBar().setDisplayHomeAsUpEnabled(!show);
+        getSupportActionBar().setHomeButtonEnabled(!show);
     }
 
     private void addReview(Intent data) {
