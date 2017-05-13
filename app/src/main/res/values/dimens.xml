@@ -4,4 +4,5 @@
     <dimen name="card_margin">6dp</dimen>
     <dimen name="card_corner_radius">4dp</dimen>
     <dimen name="text_details_size">18sp</dimen>
+    <dimen name="text_details_label_size">12sp</dimen>
 </resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="address">Адрес</string>
+    <string name="author">Автор</string>
+    <string name="description">Описание</string>
+    <string name="district">Район</string>
+    <string name="new_review">Новый отзыв</string>
+    <string name="prices">Цены</string>
+    <string name="review_text">Текст отзыва</string>
+    <string name="reviews">Отзывы</string>
+    <string name="search">Поиск</string>
+    <string name="search_hint">Поиск по именам и тэгам</string>
+    <string name="tags">Тэги</string>
+    <string name="type">Тип</string>
+    <string name="work_time">Время работы</string>
+    <string name="updated">Обновлено</string>
+    <string name="review_creating_fail">Ошибка создания отзыва</string>
+</resources>

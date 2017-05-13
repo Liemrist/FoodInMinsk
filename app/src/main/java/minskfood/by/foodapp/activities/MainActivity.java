@@ -274,7 +274,7 @@ public class MainActivity extends AppCompatActivity
         String text = data.getStringExtra(ReviewActivity.EXTRA_TEXT);
 
         if (author.equals("") || text.equals("")) {
-            Toast.makeText(this, "Review creating failed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.review_creating_fail, Toast.LENGTH_SHORT).show();
             return;
         }
 

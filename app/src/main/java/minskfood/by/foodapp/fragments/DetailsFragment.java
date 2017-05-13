@@ -26,13 +26,13 @@ public class DetailsFragment extends Fragment {
     @BindView(R.id.button_new_review) Button newPostView;
     @BindView(R.id.recycler_reviews) RecyclerView mRecyclerView;
     @BindView(R.id.text_name) TextView nameView;
-    @BindView(R.id.tv_type) TextView typeView;
-    @BindView(R.id.tv_prices) TextView pricesView;
-    @BindView(R.id.tv_district) TextView districtView;
-    @BindView(R.id.tv_address) TextView addressView;
-    @BindView(R.id.tv_worktime) TextView worktimeView;
-    @BindView(R.id.tv_tags) TextView tagsView;
-    @BindView(R.id.tv_description) TextView descriptionView;
+    @BindView(R.id.text_type) TextView typeView;
+    @BindView(R.id.text_prices) TextView pricesView;
+    @BindView(R.id.text_district) TextView districtView;
+    @BindView(R.id.text_address) TextView addressView;
+    @BindView(R.id.text_worktime) TextView worktimeView;
+    @BindView(R.id.text_tags) TextView tagsView;
+    @BindView(R.id.text_description) TextView descriptionView;
 
     private OnFragmentInteractionListener listener;
 
@@ -98,7 +98,7 @@ public class DetailsFragment extends Fragment {
     }
 
     @OnClick(R.id.button_new_review)
-    public void createReview() {
+    public void onCreateReviewClick() {
         if (listener != null) listener.onCreateReviewInteraction();
     }
 
