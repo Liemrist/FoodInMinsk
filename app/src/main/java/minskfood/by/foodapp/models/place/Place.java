@@ -4,9 +4,9 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
+
 public class Place extends RealmObject {
-    @PrimaryKey
-    private String _id;
+    @PrimaryKey private String _id;
 
     private String description;
     private String name;
@@ -20,7 +20,6 @@ public class Place extends RealmObject {
     private RealmList<Review> reviews;
     private RealmList<Tag> tags;
 
-    /* Getters */
 
     public String getId() {
         return _id;
@@ -58,20 +57,12 @@ public class Place extends RealmObject {
         return reviews;
     }
 
-    public RealmList<Tag> getTags() {
-        return tags;
-    }
-
-    public String getTagsString() {
-        String result = "";
+    public String getTags() {
+        StringBuilder result = new StringBuilder("");
         for (Tag tag : tags) {
-            result += "#" + tag.getTag() + " ";
+            result.append("#").append(tag.getTag()).append(" ");
         }
-        return result;
-    }
-
-    public void setReviews(RealmList<Review> reviews) {
-        this.reviews = reviews;
+        return result.toString();
     }
 
     public void addReview(Review review) {

@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/bar_add_review"
-        android:icon="@drawable/ic_add_review"
+        android:icon="@drawable/ic_add_review_white"
         android:title="Item"
         app:showAsAction="always" />
 </menu>

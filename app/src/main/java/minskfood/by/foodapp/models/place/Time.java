@@ -2,6 +2,7 @@ package minskfood.by.foodapp.models.place;
 
 import io.realm.RealmObject;
 
+
 public class Time extends RealmObject {
     private int hours;
     private int minutes;

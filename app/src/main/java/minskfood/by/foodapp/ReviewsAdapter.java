@@ -19,6 +19,7 @@ import minskfood.by.foodapp.models.place.Review;
 public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHolder> {
     private List<Review> reviews;
 
+
     public ReviewsAdapter(List<Review> reviews) {
         this.reviews = reviews;
     }

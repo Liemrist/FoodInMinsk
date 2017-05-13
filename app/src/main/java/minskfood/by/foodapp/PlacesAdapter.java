@@ -8,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,6 +20,7 @@ import minskfood.by.foodapp.models.place.Place;
 public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder> {
     private List<Place> places;
     private OnPlaceClickListener listener;
+
 
     public PlacesAdapter(List<Place> places, OnPlaceClickListener listener) {
         this.places = places;
@@ -39,7 +39,7 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
         holder.place = places.get(position);
         holder.addressView.setText(places.get(position).getLocation().getAddress());
         holder.nameView.setText(places.get(position).getName());
-        holder.tagsView.setText(places.get(position).getTagsString());
+        holder.tagsView.setText(places.get(position).getTags());
         switch (holder.place.getType()) {
             case "Restaurant":
                 holder.imageView.setImageResource(R.drawable.goof);
@@ -74,10 +74,14 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
     public class ViewHolder extends RecyclerView.ViewHolder {
         public Place place;
 
-        @BindView(R.id.image_place) ImageView imageView;
-        @BindView(R.id.text_address) TextView addressView;
-        @BindView(R.id.text_name) TextView nameView;
-        @BindView(R.id.text_tags) TextView tagsView;
+        @BindView(R.id.image_place)
+        ImageView imageView;
+        @BindView(R.id.text_address)
+        TextView addressView;
+        @BindView(R.id.text_name)
+        TextView nameView;
+        @BindView(R.id.text_tags)
+        TextView tagsView;
 
         public ViewHolder(View view) {
             super(view);

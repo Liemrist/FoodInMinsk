@@ -196,7 +196,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:drawablePadding="20dp"
-                    android:drawableStart="@drawable/ic_action_name"
+                    android:drawableStart="@drawable/ic_new_review_grey"
                     android:text="@string/new_review"
                     android:textAllCaps="false"
                     android:textColor="#808080"

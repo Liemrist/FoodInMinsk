@@ -39,24 +39,20 @@ public class SoapRequestAsync extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        if (result != null) {
-            callback.onSoapPostExecute(result);
-        } else {
-            callback.onSoapPostExecute("null");
-        }
+        callback.onSoapPostExecute(result);
     }
 
     /**
      * Adds review to the place in the remote database.
      *
-     * @param id     Id of edited place
-     * @param author Review author
-     * @param text   Review text
+     * @param placeId Id of edited place
+     * @param author  Review author
+     * @param text    Review text
      * @return String response of soap service on server (json object) or null
      */
-    private String addReview(String id, String author, String text) {
+    private String addReview(String placeId, String author, String text) {
         SoapObject request = new SoapObject(NAMESPACE, "Request");
-        request.addProperty("id", id);
+        request.addProperty("id", placeId);
         request.addProperty("author", author);
         request.addProperty("review", text);
 

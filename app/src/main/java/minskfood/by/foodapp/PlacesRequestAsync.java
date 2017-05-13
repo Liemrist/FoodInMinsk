@@ -16,6 +16,7 @@ import java.net.URL;
 public class PlacesRequestAsync extends AsyncTask<String, Integer, String> {
     private OnPostExecuteListener callback;
 
+
     public PlacesRequestAsync(Context context) {
         if (context instanceof OnPostExecuteListener) {
             callback = (OnPostExecuteListener) context;
@@ -34,7 +35,7 @@ public class PlacesRequestAsync extends AsyncTask<String, Integer, String> {
                     && networkInfo.getType() != ConnectivityManager.TYPE_MOBILE);
             // If no connectivity, cancel network operation and update Callback with null data.
             if (noConnection) {
-                callback.onResponse(null);
+                callback.onRestPostExecute(null);
                 cancel(true);
             }
         }
@@ -62,14 +63,14 @@ public class PlacesRequestAsync extends AsyncTask<String, Integer, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        callback.onResponse(result);
+        callback.onRestPostExecute(result);
     }
 
     /**
-     * Gets a URL, sets up a connection and gets the HTTP onResponse body from the server.
+     * Gets a URL, sets up a connection and gets the HTTP onRestPostExecute body from the server.
      *
      * @param url The url of the server resource
-     * @return the onResponse body in String form if the network request is successful.
+     * @return the onRestPostExecute body in String form if the network request is successful.
      * @throws IOException if cannot close the connection.
      */
     private static String downloadUrl(URL url) throws IOException {
@@ -121,7 +122,7 @@ public class PlacesRequestAsync extends AsyncTask<String, Integer, String> {
     }
 
     public interface OnPostExecuteListener {
-        void onResponse(String response);
+        void onRestPostExecute(String response);
 
         /**
          * Gets the device's active network status as a NetworkInfo object.

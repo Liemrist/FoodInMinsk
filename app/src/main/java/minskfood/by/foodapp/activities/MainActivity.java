@@ -31,29 +31,29 @@ import minskfood.by.foodapp.models.place.Review;
 
 
 public class MainActivity extends AppCompatActivity
-        implements PlacesRequestAsync.OnPostExecuteListener,
+        implements SoapRequestAsync.OnPostExecuteListener,
+        PlacesRequestAsync.OnPostExecuteListener,
         TitlesFragment.OnFragmentInteractionListener,
-        DetailsFragment.OnFragmentInteractionListener,
-        SoapRequestAsync.OnPostExecuteListener {
+        DetailsFragment.OnFragmentInteractionListener {
 
-    public static final String URL_PLACES = "http://env-2955146.mycloud.by/places";
-    private static final String CUR_POSITION = "CUR_POSITION";
+    private static final String URL_PLACES = "http://env-2955146.mycloud.by/places";
+    private static final String CURRENT_POSITION = "CURRENT_POSITION";
     private static final int REVIEW_ACTIVITY_INDEX = 0;
-    protected String curCheckPosition;
+    private String currentCheckPosition;
     private boolean dualPane;
     private Realm realm;
     private Menu menu;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Realm.init(this);
 
-        setContentView(R.layout.fragment_layout);
+        setContentView(R.layout.activity_main);
 
         if (savedInstanceState != null) {
-            curCheckPosition = savedInstanceState.getString(CUR_POSITION, "null");
+            currentCheckPosition = savedInstanceState.getString(CURRENT_POSITION, "null");
         }
 
         dualPane =
@@ -65,34 +65,11 @@ public class MainActivity extends AppCompatActivity
                     .replace(R.id.fragment_container, firstFragment)
                     .commit();
         } else {
-            DetailsFragment newFragment = DetailsFragment.newInstance(curCheckPosition);
+            DetailsFragment newFragment = DetailsFragment.newInstance(currentCheckPosition);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.details, newFragment)
                     .commit();
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (realm != null) realm.close();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(CUR_POSITION, curCheckPosition);
-    }
-
-    /**
-     * Shows or hides menu group
-     *
-     * @param showMenu boolean for show menu or not
-     */
-    public void showOverflowMenu(boolean showMenu) {
-        if (menu == null)
-            return;
-        menu.setGroupVisible(R.id.main_menu_group, showMenu);
     }
 
     @Override
@@ -153,26 +130,103 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(CURRENT_POSITION, currentCheckPosition);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (realm != null) realm.close();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REVIEW_ACTIVITY_INDEX:
-                if (resultCode == android.app.Activity.RESULT_OK) {
-                    addReview(data);
-                    break;
-                } else {
-                    break;
-                }
+        if (requestCode == REVIEW_ACTIVITY_INDEX && resultCode == android.app.Activity.RESULT_OK) {
+            addReview(data);
         }
     }
 
-    /**
-     * GET request to Places server
-     *
-     * @param response - onResponse from server (in JSON array)
-     */
+    /********* TitlesFragment method implementations  ********/
+
     @Override
-    public void onResponse(String response) {
-        boolean isLegal = response != null && !response.equals("No onResponse received.")
+    public void onTitleInteraction(String index) {
+        currentCheckPosition = index;
+        if (dualPane) {
+            // Check what fragment is currently shown, replace if needed.
+            DetailsFragment details = (DetailsFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.details);
+            if (details == null || !details.getShownIndex().equals(index)) {
+                details = DetailsFragment.newInstance(index);
+                getSupportFragmentManager().beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        .replace(R.id.details, details)
+                        .commit();
+            }
+        } else {
+            DetailsFragment newFragment = DetailsFragment.newInstance(index);
+            getSupportFragmentManager().beginTransaction()
+                    .addToBackStack(null)
+                    .replace(R.id.fragment_container, newFragment)
+                    .commit();
+            showMenuGroup(false);
+        }
+    }
+
+    @Override
+    public void onSwipeRefreshInteraction() {
+        new PlacesRequestAsync(this).execute(MainActivity.URL_PLACES);
+    }
+
+    @Override
+    public List<Place> composeAdapter() {
+        showMenuGroup(true);
+        realm = Realm.getDefaultInstance();
+        List<Place> places = null;
+        try {
+            places = realm.where(Place.class).findAll();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // fixme: check with null array on server and fix if statement
+        if (places != null) {
+            currentCheckPosition = places.get(0).getId();
+        }
+        return places;
+    }
+
+    /********* DetailsFragment method implementations  ********/
+
+    @Override
+    public void onCreateReviewInteraction() {
+        Intent intent = new Intent(MainActivity.this, ReviewActivity.class);
+        startActivityForResult(intent, REVIEW_ACTIVITY_INDEX);
+    }
+
+    @Override
+    public Place getPlaceById(String id) {
+        Realm realm;
+        realm = Realm.getDefaultInstance();
+        Place place = null;
+        try {
+            place = realm.where(Place.class).equalTo("_id", id).findFirst();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return place;
+    }
+
+    /********* Rest and soap method implementations  ********/
+
+    @Override
+    public void onSoapPostExecute(String response) {
+        Toast.makeText(this, "soap: " + response, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRestPostExecute(String response) {
+        boolean isLegal = response != null && !response.equals("No onRestPostExecute received.")
                 && !response.equals("Response null");
 
         if (isLegal) {
@@ -207,83 +261,17 @@ public class MainActivity extends AppCompatActivity
         return connectivityManager.getActiveNetworkInfo();
     }
 
-    @Override
-    public void onTitleInteraction(String index) {
-        curCheckPosition = index;
-        if (dualPane) {
-            // Check what fragment is currently shown, replace if needed.
-            DetailsFragment details = (DetailsFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.details);
-            if (details == null || !details.getShownIndex().equals(index)) {
-                details = DetailsFragment.newInstance(index);
-                getSupportFragmentManager().beginTransaction()
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                        .replace(R.id.details, details)
-                        .commit();
-            }
-        } else {
-            DetailsFragment newFragment = DetailsFragment.newInstance(index);
-            getSupportFragmentManager().beginTransaction()
-                    .addToBackStack(null)
-                    .replace(R.id.fragment_container, newFragment)
-                    .commit();
-            showOverflowMenu(false);
-        }
-    }
+    /********* Helper Methods  ********/
 
-    @Override
-    public List<Place> composeAdapter() {
-        showOverflowMenu(true);
-        // todo: use RealmResults and add changeListener (https://github.com/realm/realm-java/issues/2946)
-        // also try to use places = realm.where(Place.class).findAllAsync();
-        realm = Realm.getDefaultInstance();
-        List<Place> places = null;
-        try {
-            places = realm.where(Place.class).findAll();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // fixme: check with null array on server and fix if statement
-        if (places != null) {
-            curCheckPosition = places.get(0).getId();
-        }
-        return places;
-    }
-
-    @Override
-    public void onCreateReviewInteraction() {
-        Intent intent = new Intent(MainActivity.this, ReviewActivity.class);
-        startActivityForResult(intent, REVIEW_ACTIVITY_INDEX);
-    }
-
-    @Override
-    public Place getPlaceById(String id) {
-        Realm realm;
-        realm = Realm.getDefaultInstance();
-        Place place = null;
-
-        try {
-            place = realm.where(Place.class).equalTo("_id", id).findFirst();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return place;
-    }
-
-    /**
-     * SOAP request result handler
-     *
-     * @param response - onResponse from soap service on Places server
-     */
-    @Override
-    public void onSoapPostExecute(String response) {
-        Toast.makeText(this, "onResponse: " + response, Toast.LENGTH_SHORT).show();
+    public void showMenuGroup(boolean show) {
+        if (menu == null) return;
+        menu.setGroupVisible(R.id.main_menu_group, show);
     }
 
     private void addReview(Intent data) {
-        String id = curCheckPosition;
-        String author = data.getStringExtra(ReviewActivity.EXTRA_REVIEW_AUTHOR);
-        String text = data.getStringExtra(ReviewActivity.EXTRA_REVIEW_TEXT);
+        String id = currentCheckPosition;
+        String author = data.getStringExtra(ReviewActivity.EXTRA_AUTHOR);
+        String text = data.getStringExtra(ReviewActivity.EXTRA_TEXT);
 
         if (author.equals("") || text.equals("")) {
             Toast.makeText(this, "Review creating failed", Toast.LENGTH_SHORT).show();
@@ -291,7 +279,8 @@ public class MainActivity extends AppCompatActivity
         }
 
         new SoapRequestAsync(MainActivity.this).execute(id, author, text);
-        
+
+        // TODO: 5/13/2017 add review to local db only if added to server
         realm.executeTransaction(realm1 -> {
             Place place = realm1.where(Place.class).equalTo("_id", id).findFirst();
             place.addReview(new Review(author, text));
