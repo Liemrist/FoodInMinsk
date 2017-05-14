@@ -2,6 +2,7 @@ package minskfood.by.foodapp.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -64,6 +65,12 @@ public class DetailsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_details, container, false);
         ButterKnife.bind(this, view);
 
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         if (getArguments() != null) {
             Place place = listener.getPlaceById(getArguments().getString(PLACE_ID));
 
@@ -91,8 +98,6 @@ public class DetailsFragment extends Fragment {
                 mRecyclerView.setAdapter(new ReviewsAdapter(place.getReviews()));
             }
         }
-
-        return view;
     }
 
     @Override

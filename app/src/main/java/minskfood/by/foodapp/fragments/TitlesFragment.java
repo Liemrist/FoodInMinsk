@@ -2,6 +2,7 @@ package minskfood.by.foodapp.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -42,20 +43,23 @@ public class TitlesFragment extends Fragment implements PlacesAdapter.OnPlaceCli
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        List<Place> places = listener.composeAdapter();
-
-        recyclerAdapter = new PlacesAdapter(places, TitlesFragment.this);
-
         View view = inflater.inflate(R.layout.fragment_titles, container, false);
         ButterKnife.bind(this, view);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(recyclerAdapter);
 
         swipeRefreshLayout.setOnRefreshListener(() -> listener.onSwipeRefreshInteraction());
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        List<Place> places = listener.composeAdapter();
+
+        recyclerAdapter = new PlacesAdapter(places, TitlesFragment.this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(recyclerAdapter);
     }
 
     @Override

@@ -36,11 +36,12 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
         holder.authorView.setText(reviews.get(position).getAuthor());
         holder.textView.setText(reviews.get(position).getText());
     }
-
+// portrait-click on place-landscape-update-search- ERROR
     @Override
     public int getItemCount() {
-        // FIXME: 5/14/2017 Realm instance has been closed or
-        // this object or its parent has been deleted when searching sometimes.
+        if (reviews != null) {
+            return 0;
+        }
         return reviews.size();
     }
 

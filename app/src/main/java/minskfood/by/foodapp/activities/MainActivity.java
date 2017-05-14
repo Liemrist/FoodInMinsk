@@ -8,6 +8,7 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -15,7 +16,7 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity
     private boolean dualPane;
     private Realm realm;
     private Menu menu;
+    private View currentView;
 
 
     @Override
@@ -61,14 +63,16 @@ public class MainActivity extends AppCompatActivity
                 getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
 
         if (dualPane) {
+            currentView = findViewById(R.id.landscape_container);
             DetailsFragment newFragment = DetailsFragment.newInstance(currentCheckPosition);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.details, newFragment)
                     .commit();
         } else {
+            currentView = findViewById(R.id.portrait_container);
             TitlesFragment firstFragment = new TitlesFragment();
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, firstFragment)
+                    .replace(R.id.portrait_container, firstFragment)
                     .commit();
         }
     }
@@ -120,7 +124,7 @@ public class MainActivity extends AppCompatActivity
                                 .findFragmentById(R.id.titles);
                     } else {
                         titlesFragment = getSupportFragmentManager()
-                                .findFragmentById(R.id.fragment_container);
+                                .findFragmentById(R.id.portrait_container);
                     }
 
                     if (titlesFragment == null || !(titlesFragment instanceof TitlesFragment))
@@ -179,7 +183,7 @@ public class MainActivity extends AppCompatActivity
             DetailsFragment newFragment = DetailsFragment.newInstance(index);
             getSupportFragmentManager().beginTransaction()
                     .addToBackStack(null)
-                    .replace(R.id.fragment_container, newFragment)
+                    .replace(R.id.portrait_container, newFragment)
                     .commit();
             showMenuGroup(false);
         }
@@ -215,7 +219,7 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this, ReviewActivity.class);
             startActivityForResult(intent, REVIEW_ACTIVITY_INDEX);
         } else {
-            Toast.makeText(this, R.string.place_not_selected, Toast.LENGTH_SHORT).show();
+            Snackbar.make(currentView, R.string.place_not_selected, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -242,9 +246,9 @@ public class MainActivity extends AppCompatActivity
                 place.addReview(response);
             });
 
-            Toast.makeText(this, R.string.review_create, Toast.LENGTH_SHORT).show();
+            Snackbar.make(currentView, R.string.review_create, Snackbar.LENGTH_LONG).show();
         } else {
-            Toast.makeText(this, R.string.review_create_failed, Toast.LENGTH_SHORT).show();
+            Snackbar.make(currentView, R.string.review_create_failed, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -255,9 +259,9 @@ public class MainActivity extends AppCompatActivity
             realm.executeTransaction(realm12 -> realm12
                     .createOrUpdateAllFromJson(Place.class, response));
 
-            Toast.makeText(this, R.string.update, Toast.LENGTH_SHORT).show();
+            Snackbar.make(currentView, R.string.update, Snackbar.LENGTH_LONG).show();
         } else {
-            Toast.makeText(this, R.string.update_failed, Toast.LENGTH_SHORT).show();
+            Snackbar.make(currentView, R.string.update_failed, Snackbar.LENGTH_LONG).show();
         }
 
         if (dualPane) {
@@ -268,7 +272,7 @@ public class MainActivity extends AppCompatActivity
             }
         } else {
             TitlesFragment titlesFragment = (TitlesFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.fragment_container);
+                    .findFragmentById(R.id.portrait_container);
             if (titlesFragment != null) {
                 titlesFragment.updateListView();
             }
@@ -288,8 +292,10 @@ public class MainActivity extends AppCompatActivity
         if (menu == null) return;
         menu.setGroupVisible(R.id.main_menu_group, show);
         // shows home button on the action bar when only details fragment visible
-        getSupportActionBar().setDisplayHomeAsUpEnabled(!show);
-        getSupportActionBar().setHomeButtonEnabled(!show);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(!show);
+            getSupportActionBar().setHomeButtonEnabled(!show);
+        }
     }
 
     private void addReview(Intent data) {
@@ -298,7 +304,7 @@ public class MainActivity extends AppCompatActivity
         String text = data.getStringExtra(ReviewActivity.EXTRA_TEXT);
 
         if (author.equals("") || text.equals("")) {
-            Toast.makeText(this, R.string.review_create_failed, Toast.LENGTH_SHORT).show();
+            Snackbar.make(currentView, R.string.review_create_failed, Snackbar.LENGTH_LONG).show();
             return;
         }
 
