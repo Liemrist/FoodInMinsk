@@ -40,8 +40,8 @@ public class MainActivity extends AppCompatActivity
     private static final String URL_PLACES = "http://env-2955146.mycloud.by/places";
     private static final String CURRENT_POSITION = "CURRENT_POSITION";
     private static final int REVIEW_ACTIVITY_INDEX = 0;
-    private String currentCheckPosition;
     private boolean dualPane;
+    private String currentCheckPosition;
     private Realm realm;
     private Menu menu;
     private View currentView;

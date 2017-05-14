@@ -39,10 +39,16 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        if (reviews != null) {
+        // FIXME: Fix error handling or update behavior
+        // FIXME: Update current details view when updating titles for example.
+        int size;
+        try {
+            size = reviews.size();
+        } catch (IllegalStateException e){
+            e.printStackTrace();
             return 0;
         }
-        return reviews.size();
+        return size;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
