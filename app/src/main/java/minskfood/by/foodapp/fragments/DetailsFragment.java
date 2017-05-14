@@ -25,7 +25,8 @@ public class DetailsFragment extends Fragment {
     private static final String PLACE_ID = "index";
 
     @BindView(R.id.button_new_review) Button newPostView;
-    @BindView(R.id.recycler_reviews) RecyclerView mRecyclerView;
+    @BindView(R.id.recycler_reviews) RecyclerView recyclerView;
+
     @BindView(R.id.text_name) TextView nameView;
     @BindView(R.id.text_type) TextView typeView;
     @BindView(R.id.text_prices) TextView pricesView;
@@ -90,12 +91,12 @@ public class DetailsFragment extends Fragment {
 
                 LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
                 DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(
-                        mRecyclerView.getContext(), mLayoutManager.getOrientation());
-                mRecyclerView.addItemDecoration(mDividerItemDecoration);
-                mRecyclerView.setLayoutManager(mLayoutManager);
-                mRecyclerView.setHasFixedSize(true);
-                mRecyclerView.setNestedScrollingEnabled(false); // Smooth scrolling in ScrollView
-                mRecyclerView.setAdapter(new ReviewsAdapter(place.getReviews()));
+                        recyclerView.getContext(), mLayoutManager.getOrientation());
+                recyclerView.addItemDecoration(mDividerItemDecoration);
+                recyclerView.setLayoutManager(mLayoutManager);
+                recyclerView.setHasFixedSize(true);
+                recyclerView.setNestedScrollingEnabled(false); // Smooth scrolling in ScrollView
+                recyclerView.setAdapter(new ReviewsAdapter(place.getReviews()));
             }
         }
     }
@@ -117,6 +118,10 @@ public class DetailsFragment extends Fragment {
         } else {
             return "0";
         }
+    }
+
+    public void updateListView() {
+        recyclerView.getAdapter().notifyDataSetChanged();
     }
 
     public interface OnFragmentInteractionListener {

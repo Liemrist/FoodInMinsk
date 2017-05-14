@@ -1,11 +1,14 @@
 package minskfood.by.foodapp;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -20,11 +23,12 @@ import minskfood.by.foodapp.models.place.Place;
 public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder> {
     private List<Place> places;
     private OnPlaceClickListener listener;
+    private Context context;
 
-
-    public PlacesAdapter(List<Place> places, OnPlaceClickListener listener) {
+    public PlacesAdapter(List<Place> places, Context context) {
         this.places = places;
-        this.listener = listener;
+        this.context = context;
+        this.listener = (OnPlaceClickListener) context;
     }
 
     @Override
@@ -44,16 +48,18 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
         } else {
             holder.tagsView.setVisibility(View.GONE);
         }
-        switch (holder.place.getType()) {
-            case "Restaurant":
-                holder.imageView.setImageResource(R.drawable.goof);
-                break;
-            case "Cafe":
-                holder.imageView.setImageResource(R.drawable.coffee);
-                break;
-            default:
-                holder.imageView.setImageResource(R.drawable.cafe);
-                break;
+
+        if (!holder.place.getImages().isEmpty()) {
+            String url = holder.place.getImages().first().getImage();
+
+            Glide.with(context)
+                    .load(url)
+                    .centerCrop()
+                    .placeholder(R.drawable.goof)
+                    .crossFade()
+                    .into(holder.imageView);
+        } else {
+            holder.imageView.setImageResource(R.drawable.coffee);
         }
 
         holder.itemView.setOnClickListener(v -> {

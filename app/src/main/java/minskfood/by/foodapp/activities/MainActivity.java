@@ -22,6 +22,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.internal.IOException;
+import minskfood.by.foodapp.PlacesAdapter;
 import minskfood.by.foodapp.PlacesRequestAsync;
 import minskfood.by.foodapp.R;
 import minskfood.by.foodapp.SoapRequestAsync;
@@ -35,9 +36,10 @@ public class MainActivity extends AppCompatActivity
         implements SoapRequestAsync.OnPostExecuteListener,
         PlacesRequestAsync.OnPostExecuteListener,
         TitlesFragment.OnFragmentInteractionListener,
-        DetailsFragment.OnFragmentInteractionListener {
+        DetailsFragment.OnFragmentInteractionListener,
+        PlacesAdapter.OnPlaceClickListener {
 
-    private static final String URL_PLACES = "http://env-2955146.mycloud.by/places";
+    private static final String URL_PLACES = "http://krabsburger.mycloud.by/places";
     private static final String CURRENT_POSITION = "CURRENT_POSITION";
     private static final int REVIEW_ACTIVITY_INDEX = 0;
     private boolean dualPane;
@@ -104,40 +106,38 @@ public class MainActivity extends AppCompatActivity
         // Performs search
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String s) {
-                searchAndUpdateTitles(s);
+            public boolean onQueryTextSubmit(String searchText) {
+                searchAndUpdateTitles(searchText);
                 return false;
             }
 
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
-            public boolean onQueryTextChange(String s) {
-                searchAndUpdateTitles(s);
+            public boolean onQueryTextChange(String searchText) {
+                searchAndUpdateTitles(searchText);
                 return false;
             }
 
-            private void searchAndUpdateTitles(String s) {
+            private void searchAndUpdateTitles(String searchText) {
                 realm.executeTransaction(realm1 -> {
-                    Fragment titlesFragment;
+                    Fragment fragment;
                     if (dualPane) {
-                        titlesFragment = getSupportFragmentManager()
-                                .findFragmentById(R.id.titles);
+                        fragment = getSupportFragmentManager().findFragmentById(R.id.titles);
                     } else {
-                        titlesFragment = getSupportFragmentManager()
+                        fragment = getSupportFragmentManager()
                                 .findFragmentById(R.id.portrait_container);
                     }
-
-                    if (titlesFragment == null || !(titlesFragment instanceof TitlesFragment))
+                    if (fragment == null || !(fragment instanceof TitlesFragment))
                         return;
 
                     List<Place> places =
                             realm1.where(Place.class)
-                                    .contains("name", s)
+                                    .contains("name", searchText)
                                     .or()
-                                    .contains("tags.tag", s)
+                                    .contains("tags.tag", searchText)
                                     .findAll();
 
-                    ((TitlesFragment) titlesFragment).createNewAdapter(places);
+                    ((TitlesFragment) fragment).createNewAdapter(places);
                 });
             }
         });
@@ -166,30 +166,6 @@ public class MainActivity extends AppCompatActivity
     /********* TitlesFragment method implementations  ********/
 
     @Override
-    public void onTitleInteraction(String index) {
-        currentCheckPosition = index;
-        if (dualPane) {
-            // Check what fragment is currently shown, replace if needed.
-            DetailsFragment details = (DetailsFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.details);
-            if (details == null || !details.getShownIndex().equals(index)) {
-                details = DetailsFragment.newInstance(index);
-                getSupportFragmentManager().beginTransaction()
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                        .replace(R.id.details, details)
-                        .commit();
-            }
-        } else {
-            DetailsFragment newFragment = DetailsFragment.newInstance(index);
-            getSupportFragmentManager().beginTransaction()
-                    .addToBackStack(null)
-                    .replace(R.id.portrait_container, newFragment)
-                    .commit();
-            showMenuGroup(false);
-        }
-    }
-
-    @Override
     public void onSwipeRefreshInteraction() {
         new PlacesRequestAsync(MainActivity.this).execute(MainActivity.URL_PLACES);
     }
@@ -204,8 +180,9 @@ public class MainActivity extends AppCompatActivity
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // fixme: check with null array on server and fix if statement
-        if (places != null && places.size() != 0) {
+
+        // todo: check with null array on server and fix if needed
+        if (places != null && !places.isEmpty()) {
             currentCheckPosition = places.get(0).getId();
         }
         return places;
@@ -219,7 +196,7 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this, ReviewActivity.class);
             startActivityForResult(intent, REVIEW_ACTIVITY_INDEX);
         } else {
-            Snackbar.make(currentView, R.string.place_not_selected, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(currentView, R.string.place_not_selected, Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -234,7 +211,7 @@ public class MainActivity extends AppCompatActivity
         return place;
     }
 
-    /********* Rest and soap method implementations  ********/
+    /********* Other method implementations  ********/
 
     @Override
     public void onSoapPostExecute(Review response) {
@@ -246,9 +223,19 @@ public class MainActivity extends AppCompatActivity
                 place.addReview(response);
             });
 
-            Snackbar.make(currentView, R.string.review_create, Snackbar.LENGTH_LONG).show();
+            DetailsFragment fragment;
+            if (dualPane) {
+                fragment = (DetailsFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.details);
+            } else {
+                fragment = (DetailsFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.portrait_container);
+            }
+            if (fragment != null) fragment.updateListView();
+
+            Snackbar.make(currentView, R.string.review_create, Snackbar.LENGTH_SHORT).show();
         } else {
-            Snackbar.make(currentView, R.string.review_create_failed, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(currentView, R.string.review_create_failed, Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -259,23 +246,20 @@ public class MainActivity extends AppCompatActivity
             realm.executeTransaction(realm12 -> realm12
                     .createOrUpdateAllFromJson(Place.class, response));
 
-            Snackbar.make(currentView, R.string.update, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(currentView, R.string.update, Snackbar.LENGTH_SHORT).show();
         } else {
-            Snackbar.make(currentView, R.string.update_failed, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(currentView, R.string.update_failed, Snackbar.LENGTH_SHORT).show();
         }
 
+        TitlesFragment fragment;
         if (dualPane) {
-            TitlesFragment titlesFragment = (TitlesFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.titles);
-            if (titlesFragment != null) {
-                titlesFragment.updateListView();
-            }
+            fragment = (TitlesFragment) getSupportFragmentManager().findFragmentById(R.id.titles);
         } else {
-            TitlesFragment titlesFragment = (TitlesFragment) getSupportFragmentManager()
+            fragment = (TitlesFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.portrait_container);
-            if (titlesFragment != null) {
-                titlesFragment.updateListView();
-            }
+        }
+        if (fragment != null) {
+            fragment.updateListView();
         }
     }
 
@@ -284,6 +268,31 @@ public class MainActivity extends AppCompatActivity
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         return connectivityManager.getActiveNetworkInfo();
+    }
+
+    @Override
+    public void onPlaceClick(Place place) {
+        currentCheckPosition = place.getId();
+        DetailsFragment fragment;
+        if (dualPane) {
+            // Check what fragment is currently shown, replace if needed.
+            fragment = (DetailsFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.details);
+            if (fragment == null || !fragment.getShownIndex().equals(currentCheckPosition)) {
+                fragment = DetailsFragment.newInstance(currentCheckPosition);
+                getSupportFragmentManager().beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        .replace(R.id.details, fragment)
+                        .commit();
+            }
+        } else {
+            fragment = DetailsFragment.newInstance(currentCheckPosition);
+            getSupportFragmentManager().beginTransaction()
+                    .addToBackStack(null)
+                    .replace(R.id.portrait_container, fragment)
+                    .commit();
+            showMenuGroup(false);
+        }
     }
 
     /********* Helper Methods  ********/

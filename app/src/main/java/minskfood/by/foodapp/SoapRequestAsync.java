@@ -16,8 +16,8 @@ import minskfood.by.foodapp.models.place.Review;
  * Sends soap request on server in separate thread.
  */
 public class SoapRequestAsync extends AsyncTask<String, Void, Review> {
-    private static final String NAMESPACE = "http://env-2955146.mycloud.by/";
-    private static final String SOAP_ACTION = "http://env-2955146.mycloud.by/wsdl";
+    private static final String NAMESPACE = "http://krabsburger.mycloud.by/";
+    private static final String SOAP_ACTION = "http://krabsburger.mycloud.by/wsdl";
     private static final String URL = SOAP_ACTION;
 
     private OnPostExecuteListener listener;

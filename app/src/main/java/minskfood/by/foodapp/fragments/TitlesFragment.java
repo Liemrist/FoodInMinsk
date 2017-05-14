@@ -20,7 +20,7 @@ import minskfood.by.foodapp.R;
 import minskfood.by.foodapp.models.place.Place;
 
 
-public class TitlesFragment extends Fragment implements PlacesAdapter.OnPlaceClickListener {
+public class TitlesFragment extends Fragment {
     @BindView(R.id.recycler_titles) RecyclerView recyclerView;
     @BindView(R.id.swiperefresh_titles) SwipeRefreshLayout swipeRefreshLayout;
 
@@ -55,7 +55,7 @@ public class TitlesFragment extends Fragment implements PlacesAdapter.OnPlaceCli
         super.onViewCreated(view, savedInstanceState);
         List<Place> places = listener.composeAdapter();
 
-        recyclerAdapter = new PlacesAdapter(places, TitlesFragment.this);
+        recyclerAdapter = new PlacesAdapter(places, getActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(recyclerAdapter);
@@ -67,13 +67,8 @@ public class TitlesFragment extends Fragment implements PlacesAdapter.OnPlaceCli
         listener = null;
     }
 
-    @Override
-    public void onPlaceClick(Place place) {
-        listener.onTitleInteraction(place.getId());
-    }
-
     public void createNewAdapter(List<Place> places) {
-        recyclerAdapter = new PlacesAdapter(places, TitlesFragment.this);
+        recyclerAdapter = new PlacesAdapter(places, getActivity());
         recyclerView.setAdapter(recyclerAdapter);
     }
 
@@ -83,8 +78,6 @@ public class TitlesFragment extends Fragment implements PlacesAdapter.OnPlaceCli
     }
 
     public interface OnFragmentInteractionListener {
-        void onTitleInteraction(String index);
-
         void onSwipeRefreshInteraction();
 
         List<Place> composeAdapter();
