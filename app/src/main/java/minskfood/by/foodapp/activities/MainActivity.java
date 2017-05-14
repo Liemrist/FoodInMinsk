@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSwipeRefreshInteraction() {
-        new PlacesRequestAsync(this).execute(MainActivity.URL_PLACES);
+        new PlacesRequestAsync(MainActivity.this).execute(MainActivity.URL_PLACES);
     }
 
     @Override

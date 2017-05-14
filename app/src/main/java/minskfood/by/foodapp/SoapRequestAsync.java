@@ -21,27 +21,24 @@ public class SoapRequestAsync extends AsyncTask<String, Void, Review> {
     private static final String SOAP_ACTION = "http://env-2955146.mycloud.by/wsdl";
     private static final String URL = SOAP_ACTION;
 
-    private OnPostExecuteListener callback;
+    private OnPostExecuteListener listener;
 
 
-    public SoapRequestAsync(Context context) {
-        if (context instanceof OnPostExecuteListener) {
-            callback = (OnPostExecuteListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnPostExecuteListener");
-        }
+    public SoapRequestAsync(OnPostExecuteListener listener) {
+        this.listener = listener;
     }
 
     @Override
     protected Review doInBackground(String... params) {
-        if (params.length < 3) return null;
+        if (params.length < 3) {
+            return null;
+        }
         return addReview(params[0], params[1], params[2]);
     }
 
     @Override
     protected void onPostExecute(Review result) {
-        callback.onSoapPostExecute(result);
+        if (listener != null) listener.onSoapPostExecute(result);
     }
 
     /**

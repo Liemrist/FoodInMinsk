@@ -1,6 +1,5 @@
 package minskfood.by.foodapp;
 
-import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -14,28 +13,23 @@ import java.net.URL;
 
 
 public class PlacesRequestAsync extends AsyncTask<String, Integer, String> {
-    private OnPostExecuteListener callback;
+    private OnPostExecuteListener listener;
 
 
-    public PlacesRequestAsync(Context context) {
-        if (context instanceof OnPostExecuteListener) {
-            callback = (OnPostExecuteListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnPostExecuteListener");
-        }
+    public PlacesRequestAsync(OnPostExecuteListener listener) {
+        this.listener = listener;
     }
 
     @Override
     protected void onPreExecute() {
-        if (callback != null) {
-            NetworkInfo networkInfo = callback.getActiveNetworkInfo();
+        if (listener != null) {
+            NetworkInfo networkInfo = listener.getActiveNetworkInfo();
             boolean noConnection = networkInfo == null || !networkInfo.isConnected()
                     || (networkInfo.getType() != ConnectivityManager.TYPE_WIFI
                     && networkInfo.getType() != ConnectivityManager.TYPE_MOBILE);
             // If no connectivity, cancel network operation and update Callback with null data.
             if (noConnection) {
-                callback.onRestPostExecute(null);
+                listener.onRestPostExecute(null);
                 cancel(true);
             }
         }
@@ -63,7 +57,7 @@ public class PlacesRequestAsync extends AsyncTask<String, Integer, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        callback.onRestPostExecute(result);
+        if (listener != null) listener.onRestPostExecute(result);
     }
 
     /**
