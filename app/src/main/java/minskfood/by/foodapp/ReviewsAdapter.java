@@ -36,7 +36,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
         holder.authorView.setText(reviews.get(position).getAuthor());
         holder.textView.setText(reviews.get(position).getText());
     }
-// portrait-click on place-landscape-update-search- ERROR
+
     @Override
     public int getItemCount() {
         if (reviews != null) {
