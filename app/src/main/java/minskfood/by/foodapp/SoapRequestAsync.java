@@ -1,6 +1,5 @@
 package minskfood.by.foodapp;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
 import org.ksoap2.SoapEnvelope;
