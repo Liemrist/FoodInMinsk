@@ -14,7 +14,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -42,13 +41,15 @@ public class MainActivity extends AppCompatActivity
     private static final String URL_PLACES = "http://krabsburger.mycloud.by/places";
     private static final String CURRENT_POSITION = "CURRENT_POSITION";
     private static final int REVIEW_ACTIVITY_INDEX = 0;
+
     private boolean dualPane;
     private String currentCheckPosition;
-    private Realm realm;
+
     private Menu menu;
+    private Realm realm;
     private View currentView;
 
-
+    // todo: try load data on the first start after installation
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,54 +95,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.search, menu);
-
-        MenuItem myActionMenuItem = menu.findItem(R.id.app_bar_search);
-
-        SearchView searchView = (SearchView) myActionMenuItem.getActionView();
-        searchView.setMaxWidth(Integer.MAX_VALUE);
-        searchView.setQueryHint(getResources().getString(R.string.search_hint));
-
-        // Performs search
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String searchText) {
-                searchAndUpdateTitles(searchText);
-                return false;
-            }
-
-            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-            @Override
-            public boolean onQueryTextChange(String searchText) {
-                searchAndUpdateTitles(searchText);
-                return false;
-            }
-
-            private void searchAndUpdateTitles(String searchText) {
-                realm.executeTransaction(realm1 -> {
-                    Fragment fragment;
-                    if (dualPane) {
-                        fragment = getSupportFragmentManager().findFragmentById(R.id.titles);
-                    } else {
-                        fragment = getSupportFragmentManager()
-                                .findFragmentById(R.id.portrait_container);
-                    }
-                    if (fragment == null || !(fragment instanceof TitlesFragment))
-                        return;
-
-                    List<Place> places =
-                            realm1.where(Place.class)
-                                    .contains("name", searchText)
-                                    .or()
-                                    .contains("tags.tag", searchText)
-                                    .findAll();
-
-                    ((TitlesFragment) fragment).createNewAdapter(places);
-                });
-            }
-        });
-
+        getMenuInflater().inflate(R.menu.search, menu);
+        initSearch(menu);
         return true;
     }
 
@@ -297,16 +252,6 @@ public class MainActivity extends AppCompatActivity
 
     /********* Helper Methods  ********/
 
-    public void showMenuGroup(boolean show) {
-        if (menu == null) return;
-        menu.setGroupVisible(R.id.main_menu_group, show);
-        // shows home button on the action bar when only details fragment visible
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(!show);
-            getSupportActionBar().setHomeButtonEnabled(!show);
-        }
-    }
-
     private void addReview(Intent data) {
         String id = currentCheckPosition;
         String author = data.getStringExtra(ReviewActivity.EXTRA_AUTHOR);
@@ -318,5 +263,62 @@ public class MainActivity extends AppCompatActivity
         }
 
         new SoapRequestAsync(MainActivity.this).execute(id, author, text);
+    }
+
+    private void initSearch(Menu menu) {
+        MenuItem myActionMenuItem = menu.findItem(R.id.app_bar_search);
+
+        SearchView searchView = (SearchView) myActionMenuItem.getActionView();
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+        searchView.setQueryHint(getResources().getString(R.string.search_hint));
+
+        // Performs search
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String searchText) {
+                searchAndUpdateTitles(searchText);
+                return false;
+            }
+
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            @Override
+            public boolean onQueryTextChange(String searchText) {
+                searchAndUpdateTitles(searchText);
+                return false;
+            }
+
+            private void searchAndUpdateTitles(String searchText) {
+                realm.executeTransaction(realm1 -> {
+                    Fragment fragment;
+                    if (dualPane) {
+                        fragment = getSupportFragmentManager().findFragmentById(R.id.titles);
+                    } else {
+                        fragment = getSupportFragmentManager()
+                                .findFragmentById(R.id.portrait_container);
+                    }
+                    if (fragment == null || !(fragment instanceof TitlesFragment))
+                        return;
+
+                    List<Place> places =
+                            realm1.where(Place.class)
+                                    .contains("name", searchText)
+                                    .or()
+                                    .contains("tags.tag", searchText)
+                                    .findAll();
+
+                    ((TitlesFragment) fragment).createNewAdapter(places);
+                });
+            }
+        });
+    }
+
+    public void showMenuGroup(boolean show) {
+        if (menu == null) return;
+        menu.setGroupVisible(R.id.main_menu_group, show);
+        // shows home button on the action bar when only details fragment visible
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(!show);
+            getSupportActionBar().setHomeButtonEnabled(!show);
+        }
     }
 }
