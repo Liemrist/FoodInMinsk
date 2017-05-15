@@ -1,4 +1,5 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -28,16 +29,28 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
-                    android:textSize="30sp" />
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="30sp"
+                    tools:text="@string/name" />
 
+                <View
+                    android:id="@+id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/text_name"
+                    android:layout_marginBottom="24dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@color/ligth_grey_color" />
 
                 <TextView
                     android:id="@+id/text_type"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
-                    android:layout_below="@+id/text_name"
-                    android:textSize="@dimen/text_details_size" />
+                    android:layout_below="@+id/divider"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/text_details_size"
+                    tools:text="@string/type" />
 
                 <TextView
                     android:id="@+id/text_label_type"
@@ -47,7 +60,7 @@
                     android:layout_below="@+id/text_type"
                     android:layout_marginBottom="10dp"
                     android:text="@string/type"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/ligth_grey_color"
                     android:textSize="@dimen/text_details_label_size" />
 
 
@@ -57,6 +70,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_below="@+id/text_label_type"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="@dimen/text_details_size" />
 
                 <TextView
@@ -67,7 +81,7 @@
                     android:layout_below="@+id/text_prices"
                     android:layout_marginBottom="10dp"
                     android:text="@string/prices"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/ligth_grey_color"
                     android:textSize="@dimen/text_details_label_size" />
 
 
@@ -76,8 +90,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignStart="@+id/text_label_district"
-                    android:layout_below="@+id/text_name"
-                    android:textSize="@dimen/text_details_size" />
+                    android:layout_below="@+id/divider"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/text_details_size"
+                    tools:text="@string/district" />
 
                 <TextView
                     android:id="@+id/text_label_district"
@@ -87,7 +103,7 @@
                     android:layout_centerInParent="true"
                     android:layout_marginBottom="10dp"
                     android:text="@string/district"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/ligth_grey_color"
                     android:textSize="@dimen/text_details_label_size" />
 
 
@@ -97,6 +113,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignStart="@+id/text_label_address"
                     android:layout_below="@+id/text_label_district"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="@dimen/text_details_size" />
 
                 <TextView
@@ -107,7 +124,7 @@
                     android:layout_below="@+id/text_address"
                     android:layout_marginBottom="10dp"
                     android:text="@string/address"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/ligth_grey_color"
                     android:textSize="@dimen/text_details_label_size" />
 
 
@@ -117,6 +134,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignStart="@+id/text_label_worktime"
                     android:layout_below="@+id/text_label_address"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="@dimen/text_details_size" />
 
                 <TextView
@@ -127,7 +145,7 @@
                     android:layout_below="@+id/text_worktime"
                     android:layout_marginBottom="10dp"
                     android:text="@string/work_time"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/ligth_grey_color"
                     android:textSize="@dimen/text_details_label_size" />
 
 
@@ -138,6 +156,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_below="@+id/text_label_worktime"
                     android:layout_marginBottom="10dp"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="@dimen/text_details_size" />
 
 
@@ -147,6 +166,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_below="@+id/text_tags"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="@dimen/text_details_size" />
 
             </RelativeLayout>
@@ -156,7 +176,7 @@
         <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:card_view="http://schemas.android.com/apk/res-auto"
             android:id="@+id/card_button"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="end"
             android:layout_marginLeft="@dimen/card_margin"
@@ -170,13 +190,12 @@
                 <Button
                     android:id="@+id/button_new_review"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:drawablePadding="10dp"
-                    android:drawableStart="@drawable/ic_new_review_grey"
+                    android:drawableStart="@drawable/ic_review_brown"
                     android:text="@string/new_review"
                     android:textAllCaps="false"
-                    android:textColor="#808080"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="@dimen/text_details_size" />
 
             </LinearLayout>
@@ -198,14 +217,14 @@
                 android:layout_margin="10dp">
 
                 <TextView
-                    android:id="@+id/text_reviews"
+                    android:id="@+id/text_reviews_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:layout_marginBottom="6dp"
                     android:text="@string/reviews"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/ligth_grey_color"
                     android:textSize="@dimen/text_details_label_size" />
 
                 <android.support.v7.widget.RecyclerView
@@ -213,7 +232,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
-                    android:layout_below="@+id/text_reviews" />
+                    android:layout_below="@+id/text_reviews_label" />
 
             </RelativeLayout>
 

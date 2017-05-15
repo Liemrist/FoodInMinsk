@@ -3,4 +3,5 @@
     <color name="colorPrimary">#4e342e</color>
     <color name="colorPrimaryDark">#260e04</color>
     <color name="colorPrimaryLight">#7b5e57</color>
+    <color name="ligth_grey_color">#bebebe</color>
 </resources>

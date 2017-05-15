@@ -136,7 +136,6 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        // todo: check with null array on server and fix if needed
         if (places != null && !places.isEmpty()) {
             currentCheckPosition = places.get(0).getId();
         }
@@ -257,7 +256,7 @@ public class MainActivity extends AppCompatActivity
         String author = data.getStringExtra(ReviewActivity.EXTRA_AUTHOR);
         String text = data.getStringExtra(ReviewActivity.EXTRA_TEXT);
 
-        if (author.equals("") || text.equals("")) {
+        if (author.isEmpty() || text.isEmpty()) {
             Snackbar.make(currentView, R.string.review_create_failed, Snackbar.LENGTH_LONG).show();
             return;
         }
@@ -272,7 +271,6 @@ public class MainActivity extends AppCompatActivity
         searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setQueryHint(getResources().getString(R.string.search_hint));
 
-        // Performs search
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String searchText) {

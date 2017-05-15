@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.List;
 
@@ -55,11 +56,11 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
             Glide.with(context)
                     .load(url)
                     .centerCrop()
-                    .placeholder(R.drawable.goof)
-                    .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                    .placeholder(R.drawable.cafe_resized)
                     .into(holder.imageView);
         } else {
-            holder.imageView.setImageResource(R.drawable.coffee);
+            holder.imageView.setImageResource(R.drawable.cafe_resized);
         }
 
         holder.itemView.setOnClickListener(v -> {
