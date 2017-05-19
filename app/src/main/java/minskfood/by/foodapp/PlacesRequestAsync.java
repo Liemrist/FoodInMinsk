@@ -12,7 +12,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 
-public class PlacesRequestAsync extends AsyncTask<String, Integer, String> {
+public class PlacesRequestAsync extends AsyncTask<String, Void, String> {
     private OnPostExecuteListener listener;
 
 

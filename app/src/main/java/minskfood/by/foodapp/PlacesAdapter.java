@@ -50,18 +50,13 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
             holder.tagsView.setVisibility(View.GONE);
         }
 
-        if (!holder.place.getImages().isEmpty()) {
-            String url = holder.place.getImages().first().getImage();
-
-            Glide.with(context)
-                    .load(url)
-                    .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                    .placeholder(R.drawable.cafe_resized)
-                    .into(holder.imageView);
-        } else {
-            holder.imageView.setImageResource(R.drawable.cafe_resized);
-        }
+        Glide.with(context)
+                .load(holder.place.getImages().first().getImage())
+                .centerCrop()
+                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                .placeholder(R.drawable.cafe_resized)
+                .fallback(R.drawable.cafe_resized)
+                .into(holder.imageView);
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {

@@ -11,6 +11,7 @@
         android:layout_height="match_parent"
         android:clipChildren="false"
         android:clipToPadding="false"
+        android:paddingTop="@dimen/recycler_padding"
         android:scrollbars="vertical"
         tools:listitem="@layout/item_place" />
 
